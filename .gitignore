@@ -74,7 +74,7 @@ venv.bak/
 # ML/RL specific
 *.pkl
 *.h5
-*.zip
+# *.zip
 *.pt
 *.pth
 logs/
@@ -83,12 +83,7 @@ wandb/
 *.mp4
 *.gif
 videos/
-
-# Training outputs
-*_dqn/
-*_ppo/
-*_sac/
-roundabout_dqn/
+roundabout_dqn/DQN_*/events.out.tfevents.*
 
 # mypy
 .mypy_cache/

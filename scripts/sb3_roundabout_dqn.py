@@ -5,7 +5,7 @@ from stable_baselines3 import DQN
 import highway_env  # noqa: F401
 
 
-TRAIN = True
+TRAIN = False
 
 if __name__ == "__main__":
     # Create the environment
