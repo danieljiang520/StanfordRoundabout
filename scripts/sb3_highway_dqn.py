@@ -9,7 +9,7 @@ TRAIN = True
 
 if __name__ == "__main__":
     # Create the environment
-    env = gym.make("roundabout-v0", render_mode="rgb_array")
+    env = gym.make("highway-fast-v0", render_mode="rgb_array")
     obs, info = env.reset()
 
     # Create the model
@@ -26,19 +26,19 @@ if __name__ == "__main__":
         gradient_steps=1,
         target_update_interval=50,
         verbose=1,
-        tensorboard_log="roundabout_dqn/",
+        tensorboard_log="highway_dqn/",
     )
 
     # Train the model
     if TRAIN:
         model.learn(total_timesteps=int(2e4))
-        model.save("roundabout_dqn/model")
+        model.save("highway_dqn/model")
         del model
 
     # Run the trained model and record video
-    model = DQN.load("roundabout_dqn/model", env=env)
+    model = DQN.load("highway_dqn/model", env=env)
     env = RecordVideo(
-        env, video_folder="roundabout_dqn/videos", episode_trigger=lambda e: True
+        env, video_folder="highway_dqn/videos", episode_trigger=lambda e: True
     )
     env.unwrapped.config["simulation_frequency"] = 15  # Higher FPS for rendering
     env.unwrapped.set_record_video_wrapper(env)
