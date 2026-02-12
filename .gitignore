@@ -83,7 +83,6 @@ wandb/
 *.mp4
 *.gif
 videos/
-roundabout_dqn/DQN_*/events.out.tfevents.*
 
 # mypy
 .mypy_cache/
