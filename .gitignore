@@ -91,3 +91,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# for douglas only
+rl_env/
+my_requirements.txt
