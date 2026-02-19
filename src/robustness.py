@@ -70,9 +70,10 @@ def trajectory_metrics_from_rollout(
     accel = np.diff(velocities) / dt
     jerk = np.diff(accel) / dt
 
-    # Brake severity: quadratic penalty on all deceleration (no threshold)
+    # Brake severity: mean squared deceleration (per-step, episode-length invariant)
     decel = np.clip(-accel, 0, None)  # only negative accel (braking)
-    brake_severity = float(np.sum(decel**2))
+    n = len(decel)
+    brake_severity = float(np.sum(decel**2) / n) if n > 0 else 0.0
 
     mean_vel = np.mean(velocities) if len(velocities) > 0 else 0.0
     jerk_score = float(np.mean(jerk**2)) if len(jerk) > 0 else 0.0
@@ -94,7 +95,7 @@ def trajectory_metrics_from_rollout(
 MIN_DIST_SCALE = 20.0   # m, for norm_safety
 JERK_SCALE = 0.1        # for norm_stability (jerk sub-component)
 LANE_CHANGE_SCALE = 5.0  # typical lane changes per episode
-BRAKE_SEVERITY_SCALE = 100.0  # Σ max(0, -a)² per episode (all deceleration)
+BRAKE_SEVERITY_SCALE = 2.0  # mean of max(0, -a)² per step (m²/s⁴)
 
 
 def _scalar(x):
