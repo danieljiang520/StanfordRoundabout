@@ -22,7 +22,7 @@ from src.robustness import (
 )
 from src.robustness_optimize import optimize_weights_for_exponential
 
-NUM_ENVIRONMENTS = 30
+NUM_ENVIRONMENTS = 100
 NUM_TRAJECTORIES = 5
 MODEL_PATH = "roundabout_dqn/model"
 # Fixed seed for reproducible rollouts and (with --optimize) optimizer restarts
@@ -60,6 +60,19 @@ if __name__ == "__main__":
         metavar="W",
         help="Minimum weight per component when optimizing (default 0.05); use 0 to allow near-zero weights",
     )
+    parser.add_argument(
+        "--min-spread",
+        type=float,
+        default=0.25,
+        metavar="S",
+        help="Minimum score range to encourage when optimizing (default 0.25); raises loss if range is smaller",
+    )
+    parser.add_argument(
+        "--loss",
+        choices=("cdf", "bins"),
+        default="cdf",
+        help="Loss for exponential fit: cdf (default, smoother) or bins (histogram proportions)",
+    )
     args = parser.parse_args()
 
     np.random.seed(SEED)
@@ -84,14 +97,21 @@ if __name__ == "__main__":
 
     if args.optimize:
         weights, loss, nominal_scores = optimize_weights_for_exponential(
-            nominal_metrics, lam=args.lam, min_weight=args.min_weight, seed=SEED
+            nominal_metrics,
+            lam=args.lam,
+            min_weight=args.min_weight,
+            min_spread=args.min_spread,
+            loss_type=args.loss,
+            seed=SEED,
         )
         nominal_scores = list(nominal_scores)
         print("Optimized weights (exponential-shaped distribution):")
         for k, v in weights.items():
             print(f"  {k}: {v:.4f}")
-        print(f"  Histogram MSE to target (nominals): {loss:.6f}")
+        print(f"  Loss (CDF MSE to exponential target): {loss:.6f}")
         print(f"  Nominal robustness: mean={np.mean(nominal_scores):.4f}, std={np.std(nominal_scores):.4f}, range=[{np.min(nominal_scores):.4f}, {np.max(nominal_scores):.4f}]")
+        if loss > 0.05:
+            print("  (High loss: nominal metrics may have little spread; try --min-weight 0 or more trajectories.)")
     else:
         weights = DEFAULT_WEIGHTS
 

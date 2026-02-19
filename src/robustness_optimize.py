@@ -108,25 +108,33 @@ def optimize_weights_for_exponential(
     min_dist_scale=MIN_DIST_SCALE,
     jerk_scale=JERK_SCALE,
     brake_severity_scale=BRAKE_SEVERITY_SCALE,
-    n_restarts=12,
+    n_restarts=20,
     seed=None,
     min_weight=0.05,
+    min_spread=0.25,
+    loss_type="cdf",
 ):
-    """Fit weights so nominal robustness histogram is exponential-shaped.
+    """Fit weights so nominal robustness distribution is exponential-shaped.
 
-    Minimizes MSE between binned robustness and a truncated exponential
-    CDF. Uses multiple random restarts; with seed for reproducibility.
+    By default uses CDF-based loss (smoother than bin-count MSE) and
+    penalizes solutions with score range below min_spread so the
+    optimizer does not collapse to a narrow band.
 
     Args:
         nominal_metrics: List of trajectory_metrics dicts (success=1).
         lam: Exponential rate (higher => more mass at high robustness).
-        num_bins: Number of histogram bins on [0, 1].
+        num_bins: Number of histogram bins / CDF points (default 10).
         min_dist_scale: Passed to compute_robustness.
         jerk_scale: Passed to compute_robustness.
         brake_severity_scale: Passed to compute_robustness.
-        n_restarts: Number of random initial weight vectors (default 12).
+        n_restarts: Number of random initial weight vectors (default 20).
         seed: Optional RNG seed for restarts.
         min_weight: Minimum per-component weight (default 0.05).
+        min_spread: Minimum desired range (max-min) of scores (default 0.25).
+            Penalty added to loss when range is below this.
+        loss_type: "cdf" (default) or "bins". "cdf" = MSE between
+            empirical and target CDF at bin edges (smoother). "bins" =
+            MSE between bin proportions and target bin probabilities.
 
     Returns:
         Tuple (weights_dict, loss, scores_array).
@@ -135,9 +143,10 @@ def optimize_weights_for_exponential(
 
     rng = np.random.default_rng(seed)
     edges = np.linspace(0, 1, num_bins + 1)
-    target_props = np.diff(exponential_cdf(edges, lam))
+    target_cdf_at_edges = exponential_cdf(edges, lam)
+    target_bin_props = np.diff(target_cdf_at_edges)
 
-    def histogram_mse(x):
+    def loss(x):
         w = weights_from_vector(x)
         scores = _scores_for_weights(
             nominal_metrics,
@@ -146,12 +155,19 @@ def optimize_weights_for_exponential(
             jerk_scale,
             brake_severity_scale,
         )
-        counts, _ = np.histogram(scores, bins=edges)
-        emp_props = counts / max(scores.size, 1)
-        mse = np.sum((emp_props - target_props) ** 2)
-        rng_scores = float(np.ptp(scores))
-        if rng_scores < 0.15:
-            mse += 2.0 * (0.15 - rng_scores)
+        n = max(scores.size, 1)
+        ptp_scores = float(np.ptp(scores))
+
+        if loss_type == "cdf":
+            emp_cdf = np.array([np.sum(scores <= e) / n for e in edges])
+            mse = np.mean((emp_cdf - target_cdf_at_edges) ** 2)
+        else:
+            counts, _ = np.histogram(scores, bins=edges)
+            emp_props = counts / n
+            mse = np.sum((emp_props - target_bin_props) ** 2)
+
+        if ptp_scores < min_spread:
+            mse += 3.0 * (min_spread - ptp_scores)
         return mse
 
     bounds = weight_bounds(min_weight)
@@ -167,7 +183,7 @@ def optimize_weights_for_exponential(
 
     for x0 in starts:
         result = minimize(
-            histogram_mse,
+            loss,
             x0,
             method="SLSQP",
             bounds=bounds,
