@@ -1,12 +1,12 @@
 """
 Robustness score for roundabout policy evaluation.
-Uses safety (min distance), stability (jerk), efficiency (speed ratio), and on-road fraction.
+Uses safety (min distance), stability (jerk, lane changes, brake severity),
+efficiency (speed ratio), and on-road fraction.
 """
 import numpy as np
 
 # Constants for trajectory metrics (match notebook)
 SPEED_SCALE = 16.0  # m/s, for avg_speed_ratio
-HARD_BRAKE_THRESHOLD = 4.0  # m/s²
 
 
 def trajectory_metrics_from_rollout(
@@ -15,7 +15,6 @@ def trajectory_metrics_from_rollout(
     *,
     seed=None,
     speed_scale=SPEED_SCALE,
-    hard_brake_threshold=HARD_BRAKE_THRESHOLD,
 ):
     """
     Run one trajectory (reset + step until done/truncated) and return trajectory_metrics.
@@ -24,11 +23,10 @@ def trajectory_metrics_from_rollout(
     get_action: callable (env, obs) -> action. Called each step to get the next action.
     seed: optional reset seed.
     speed_scale: reference speed (m/s) for avg_speed_ratio.
-    hard_brake_threshold: decel (m/s²) above which a step counts as hard brake.
 
     Returns: dict with scalar trajectory metrics expected by compute_robustness:
         min_distance, avg_speed_ratio, jerk_score, on_road_frac,
-        plus success, hard_brakes, brake_severity, lane_changes, cumulative_reward.
+        plus success, brake_severity, lane_changes, cumulative_reward.
     """
     obs, info = env.reset(seed=seed)
     done = truncated = False
@@ -72,9 +70,9 @@ def trajectory_metrics_from_rollout(
     accel = np.diff(velocities) / dt
     jerk = np.diff(accel) / dt
 
-    hard_brakes = int(np.sum(accel < -hard_brake_threshold))
-    excess_decel = np.clip(-accel - hard_brake_threshold, 0, None)
-    brake_severity = float(np.sum(excess_decel**2))
+    # Brake severity: quadratic penalty on all deceleration (no threshold)
+    decel = np.clip(-accel, 0, None)  # only negative accel (braking)
+    brake_severity = float(np.sum(decel**2))
 
     mean_vel = np.mean(velocities) if len(velocities) > 0 else 0.0
     jerk_score = float(np.mean(jerk**2)) if len(jerk) > 0 else 0.0
@@ -85,7 +83,6 @@ def trajectory_metrics_from_rollout(
         "min_distance": min_dist if min_dist != float("inf") else 0.0,
         "avg_speed_ratio": mean_vel / speed_scale,
         "jerk_score": jerk_score,
-        "hard_brakes": hard_brakes,
         "brake_severity": brake_severity,
         "lane_changes": lane_changes,
         "on_road_frac": on_road_frac,
@@ -95,7 +92,9 @@ def trajectory_metrics_from_rollout(
 
 # Default normalization constants (from notebook)
 MIN_DIST_SCALE = 20.0   # m, for norm_safety
-JERK_SCALE = 0.1        # for norm_stability
+JERK_SCALE = 0.1        # for norm_stability (jerk sub-component)
+LANE_CHANGE_SCALE = 5.0  # typical lane changes per episode
+BRAKE_SEVERITY_SCALE = 100.0  # Σ max(0, -a)² per episode (all deceleration)
 
 
 def _scalar(x):
@@ -107,6 +106,8 @@ def compute_robustness(
     weights=None,
     min_dist_scale=MIN_DIST_SCALE,
     jerk_scale=JERK_SCALE,
+    lane_change_scale=LANE_CHANGE_SCALE,
+    brake_severity_scale=BRAKE_SEVERITY_SCALE,
 ):
     """
     Compute robustness score for a single trajectory.
@@ -114,11 +115,12 @@ def compute_robustness(
 
     trajectory_metrics: dict with keys (values are scalars or length-1 sequences):
         "min_distance", "avg_speed_ratio", "jerk_score", "on_road_frac";
-        optional "success" (0 = failure/collision, 1 = success).
+        optional "success", "lane_changes", "brake_severity".
     weights: dict with keys "safety", "stability", "efficiency", "road".
         If None, uses uniform weights (0.25 each).
     min_dist_scale: scale for normalizing min_distance (safety).
-    jerk_scale: scale for normalizing jerk (stability).
+    jerk_scale, lane_change_scale, brake_severity_scale:
+        scales for stability sub-components (lower raw = more stable).
 
     Returns: float; ≤ 0 on collision, in (0, 1] otherwise.
     """
@@ -138,10 +140,16 @@ def compute_robustness(
     min_dist = _scalar(trajectory_metrics["min_distance"])
     speed = _scalar(trajectory_metrics["avg_speed_ratio"])
     jerk = _scalar(trajectory_metrics["jerk_score"])
+    lane_changes = _scalar(trajectory_metrics.get("lane_changes", 0))
+    brake_severity = _scalar(trajectory_metrics.get("brake_severity", 0))
     on_road = _scalar(trajectory_metrics["on_road_frac"])
 
     norm_safety = np.clip(min_dist / min_dist_scale, 0, 1)
-    norm_stability = 1.0 - np.clip(jerk / jerk_scale, 0, 1)
+    # Stability: jerk, lane changes, brake severity (count + magnitude combined)
+    norm_jerk = 1.0 - np.clip(jerk / jerk_scale, 0, 1)
+    norm_lane = 1.0 - np.clip(lane_changes / lane_change_scale, 0, 1)
+    norm_severity = 1.0 - np.clip(brake_severity / brake_severity_scale, 0, 1)
+    norm_stability = (norm_jerk + norm_lane + norm_severity) / 3.0
     norm_efficiency = np.clip(speed, 0, 1)
     norm_road = np.clip(on_road, 0, 1)
 
