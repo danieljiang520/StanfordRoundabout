@@ -17,14 +17,16 @@ import highway_env  # noqa: F401
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.robustness import (
-    trajectory_metrics_from_rollout,
     compute_robustness,
-    optimize_weights_for_exponential,
+    trajectory_metrics_from_rollout,
 )
+from src.robustness_optimize import optimize_weights_for_exponential
 
 NUM_ENVIRONMENTS = 30
 NUM_TRAJECTORIES = 5
 MODEL_PATH = "roundabout_dqn/model"
+# Fixed seed for reproducible rollouts and (with --optimize) optimizer restarts
+SEED = 42
 
 # Default: uniform over the five components
 DEFAULT_WEIGHTS = {
@@ -60,13 +62,14 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    np.random.seed(SEED)
     env = gym.make("roundabout-v0", render_mode="rgb_array")
     model = DQN.load(MODEL_PATH, env=env)
 
     all_metrics = []
     for env_idx in range(NUM_ENVIRONMENTS):
-        seed = env_idx * 100
-        for _ in range(NUM_TRAJECTORIES):
+        for traj_idx in range(NUM_TRAJECTORIES):
+            seed = env_idx * 100 + traj_idx
             metrics = trajectory_metrics_from_rollout(env, get_action, seed=seed)
             all_metrics.append(metrics)
 
@@ -81,7 +84,7 @@ if __name__ == "__main__":
 
     if args.optimize:
         weights, loss, nominal_scores = optimize_weights_for_exponential(
-            nominal_metrics, lam=args.lam, min_weight=args.min_weight
+            nominal_metrics, lam=args.lam, min_weight=args.min_weight, seed=SEED
         )
         nominal_scores = list(nominal_scores)
         print("Optimized weights (exponential-shaped distribution):")
