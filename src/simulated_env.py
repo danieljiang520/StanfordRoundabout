@@ -4,7 +4,6 @@ Simulated roundabout environment with configurable scenario parameters.
 from typing import Optional
 
 import torch
-from gymnasium.envs.registration import register
 from highway_env.envs.roundabout_env import RoundaboutEnv
 
 from .scenario_params import NOMINAL, ScenarioParams
@@ -162,9 +161,4 @@ class SimulatedEnv(RoundaboutEnv):
         self.road.vehicles.append(vehicle)
 
 
-def register_env():
-    """Register the SimulatedEnv with gymnasium."""
-    register(
-        id="SimulatedEnv-v0",
-        entry_point="src.env:SimulatedEnv",
-    )
+

@@ -8,22 +8,16 @@ Modules:
     scenario_params: Dataclasses for configurable scenario parameters
     distributions: Helper functions for sampling and PDF calculations
     vehicle: CustomPoliteVehicle with learnable politeness
-    env: SimulatedEnv - roundabout environment with fuzzable parameters
-    rollout: Rollout function with log-probability computation
-    fuzzer: ScenarioFuzzer class for finding critical failure scenarios
+    simulated_env: SimulatedEnv - roundabout environment with fuzzable parameters
+    fuzzer: ScenarioFuzzer class with rollout and optimization methods
     robustness: Robustness score computation
 
 Example usage:
-    from src.scenario_params import ScenarioParams, NOMINAL
-    from src.env import SimulatedEnv, register_env
-    from src.rollout import rollout
-    from src.robustness import compute_robustness
+    import src  # auto-registers SimulatedEnv-v0
     
-    # Register the environment
-    register_env()
-    
-    # Create environment with custom parameters
-    env = gym.make("SimulatedEnv-v0", render_mode="rgb_array", scenario_params=NOMINAL)
+    env = gym.make("SimulatedEnv-v0", render_mode="rgb_array", scenario_params=src.NOMINAL)
+    fuzzer = src.ScenarioFuzzer(env, model)
+    result = fuzzer.rollout()
 """
 
 # Re-export commonly used items
@@ -43,8 +37,7 @@ from .distributions import (
     gaussian_mixture_pdf,
 )
 from .vehicle import CustomPoliteVehicle
-from .env import SimulatedEnv, register_env
-from .rollout import rollout
+from .simulated_env import SimulatedEnv
 from .fuzzer import ScenarioFuzzer, FuzzerConfig, PARAM_NAMES
 from .robustness import compute_robustness, trajectory_metrics_from_rollout, weights_from_vector
 
@@ -66,9 +59,6 @@ __all__ = [
     "CustomPoliteVehicle",
     # Environment
     "SimulatedEnv",
-    "register_env",
-    # Rollout
-    "rollout",
     # Fuzzer
     "ScenarioFuzzer",
     "FuzzerConfig",
