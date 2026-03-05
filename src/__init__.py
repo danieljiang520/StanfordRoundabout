@@ -40,6 +40,7 @@ from .vehicle import CustomPoliteVehicle
 from .simulated_env import SimulatedEnv
 from .fuzzer import ScenarioFuzzer, FuzzerConfig, PARAM_NAMES
 from .robustness import compute_robustness, trajectory_metrics_from_rollout, weights_from_vector
+from .failure_probability import estimate_failure_probability, print_failure_probability_report
 
 __all__ = [
     # Scenario params
@@ -67,4 +68,7 @@ __all__ = [
     "compute_robustness",
     "trajectory_metrics_from_rollout",
     "weights_from_vector",
+    # Failure probability estimation
+    "estimate_failure_probability",
+    "print_failure_probability_report",
 ]

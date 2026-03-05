@@ -95,3 +95,6 @@ dmypy.json
 # for douglas only
 rl_env/
 my_requirements.txt
+
+# for daniel only
+*.pdf
