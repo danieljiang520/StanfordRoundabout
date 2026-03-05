@@ -5,6 +5,7 @@ from typing import Optional
 
 import torch
 from highway_env.envs.roundabout_env import RoundaboutEnv
+import numpy as np
 
 from .scenario_params import NOMINAL, ScenarioParams
 from .vehicle import CustomPoliteVehicle
@@ -26,6 +27,7 @@ class SimulatedEnv(RoundaboutEnv):
         config: Optional[dict] = None,
         scenario_params: Optional[ScenarioParams] = None,
         render_mode: Optional[str] = None,
+        seed: int=42
     ):
         """Initialize the simulated environment.
         
@@ -36,12 +38,19 @@ class SimulatedEnv(RoundaboutEnv):
         """
         if scenario_params is None:
             scenario_params = NOMINAL
+        
+        
+        self.np_random = np.random.default_rng(seed)
+        self.torch_rng = torch.Generator()
+        if seed is not None:
+            self.torch_rng.manual_seed(seed)
 
         self.scenario_params = scenario_params
         super().__init__(config=config, render_mode=render_mode)
 
     def _make_vehicles(self) -> None:
         """Create vehicles with scenario-dependent parameters."""
+        torch.manual_seed(self.seed)   # store seed in environment
         position_deviation = 2.0
         min_speed, max_speed = 0.0, 32.0
 
@@ -49,7 +58,7 @@ class SimulatedEnv(RoundaboutEnv):
         initial_mu = torch.as_tensor(self.scenario_params.initial_speed.mu)
         initial_sigma = torch.as_tensor(self.scenario_params.initial_speed.sigma)
         initial_speed = torch.clamp(
-            initial_mu + initial_sigma * torch.randn_like(initial_mu),
+            initial_mu + initial_sigma * torch.randn(initial_mu.shape, generator = self.torch_rng),
             min=min_speed,
             max=16.0,
         )
@@ -70,8 +79,14 @@ class SimulatedEnv(RoundaboutEnv):
             p_s = 1.0 - torch.sum(p_tensor)
             probs = torch.cat([p_tensor, p_s.unsqueeze(0)])
 
-            cat = torch.distributions.Categorical(probs)
-            heading_idx = cat.sample()
+            # cat = torch.distributions.Categorical(probs) #comeback-1
+            # heading_idx = cat.sample()
+            heading_idx = torch.multinomial(
+                probs,
+                1,
+                generator=self.torch_rng
+            ).squeeze()
+            
 
             destination = ["exr", "nxr", "wxr", "sxr"][heading_idx.item()]
             ego_vehicle.heading_idx = heading_idx
@@ -89,7 +104,7 @@ class SimulatedEnv(RoundaboutEnv):
         other_mu = torch.as_tensor(self.scenario_params.other_vehicle_speed.mu)
         other_sigma = torch.as_tensor(self.scenario_params.other_vehicle_speed.sigma)
         other_car_speed = torch.clamp(
-            other_mu + other_sigma * torch.randn_like(other_mu),
+            other_mu + other_sigma * torch.randn(other_mu.shape, generator = self.torch_rng),
             min=min_speed,
             max=max_speed,
         )
@@ -139,14 +154,14 @@ class SimulatedEnv(RoundaboutEnv):
         for idx in range(num_mixtures - 1):
             entering_position += self.scenario_params.entering_vehicle_position.p[idx] * (
                 entering_pos_mu[idx]
-                + entering_pos_sigma[idx] * torch.randn_like(entering_pos_mu[idx])
+                + entering_pos_sigma[idx] * torch.randn(entering_pos_mu[idx].shape, generator = self.torch_rng)
             )
             last_prob -= self.scenario_params.entering_vehicle_position.p[idx]
 
         entering_position += last_prob * (
             entering_pos_mu[num_mixtures - 1]
             + entering_pos_sigma[num_mixtures - 1]
-            * torch.randn_like(entering_pos_mu[num_mixtures - 1])
+            * torch.randn(entering_pos_mu[num_mixtures - 1].shape, generator = self.torch_rng)
         )
 
         vehicle = other_vehicles_type.make_on_lane(
