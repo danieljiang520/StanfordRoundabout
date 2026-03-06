@@ -2,7 +2,7 @@
 Distribution helper functions for sampling and probability calculations.
 """
 import math
-from typing import Union
+from typing import Union,Optional
 
 import torch
 import torch.nn as nn
@@ -29,7 +29,7 @@ def to_tensor(param: ParamType, dtype: torch.dtype = torch.float32) -> torch.Ten
     return torch.tensor([param], dtype=dtype)
 
 
-def sample_gaussian_mixture(param: GaussianMixtureParam) -> torch.Tensor:
+def sample_gaussian_mixture(param: GaussianMixtureParam, generator: Optional[torch.Generator] = None) -> torch.Tensor:
     """Sample a single value from a Gaussian mixture.
     
     Args:
@@ -51,7 +51,7 @@ def sample_gaussian_mixture(param: GaussianMixtureParam) -> torch.Tensor:
     mixture_idx = torch.distributions.Categorical(p).sample().item()
 
     # Sample from selected Gaussian
-    sample = mu[mixture_idx] + sigma[mixture_idx] * torch.randn(1)
+    sample = mu[mixture_idx] + sigma[mixture_idx] * torch.randn(1, generator = generator)
     return sample.squeeze()
 
 

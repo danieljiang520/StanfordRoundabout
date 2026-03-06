@@ -79,6 +79,7 @@ class ScenarioFuzzer:
         scenario_params: Optional[ScenarioParams] = None,
         robustness_weights: Optional[Dict[str, float]] = None,
         config: Optional[FuzzerConfig] = None,
+        seed: int = 42,
     ):
         """Initialize the fuzzer.
         
@@ -97,6 +98,18 @@ class ScenarioFuzzer:
         self.config = config or FuzzerConfig()
         self._eval_count = 0
         self._history: List[Dict[str, Any]] = []
+        
+        # Set random seeds for reproducibility
+        if seed is not None:
+            np.random.seed(seed)
+            torch.manual_seed(seed)
+            # Seed environment's internal random generator
+            self.torch_rng = torch.Generator().manual_seed(seed)
+            if hasattr(env.unwrapped, 'np_random'):
+                env.unwrapped.np_random.seed(seed)
+            else:
+                # Fallback: reset environment with seed
+                env.reset(seed=seed)
     
     def rollout(
         self,
@@ -137,16 +150,16 @@ class ScenarioFuzzer:
         # Sample observation noise using numpy (faster than torch for non-gradient ops)
         num_cars = 4
         noise_position_x = np.array(
-            [float(sample_gaussian_mixture(env_params.initial_position_x)) for _ in range(num_cars)]
+            [float(sample_gaussian_mixture(env_params.initial_position_x, generator = self.torch_rng)) for _ in range(num_cars)]
         )
         noise_position_y = np.array(
-            [float(sample_gaussian_mixture(env_params.initial_position_y)) for _ in range(num_cars)]
+            [float(sample_gaussian_mixture(env_params.initial_position_y, generator = self.torch_rng)) for _ in range(num_cars)]
         )
         noise_velocity_x = np.array(
-            [float(sample_gaussian_mixture(env_params.velocity_x)) for _ in range(num_cars)]
+            [float(sample_gaussian_mixture(env_params.velocity_x, generator = self.torch_rng)) for _ in range(num_cars)]
         )
         noise_velocity_y = np.array(
-            [float(sample_gaussian_mixture(env_params.velocity_y)) for _ in range(num_cars)]
+            [float(sample_gaussian_mixture(env_params.velocity_y, generator = self.torch_rng)) for _ in range(num_cars)]
         )
 
         # Pre-compute log-prob for initial state (computed once, not per-step)
