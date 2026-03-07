@@ -4,11 +4,21 @@ Simulated roundabout environment with configurable scenario parameters.
 from typing import Optional
 
 import torch
+from gymnasium.envs.registration import register
 from highway_env.envs.roundabout_env import RoundaboutEnv
 import numpy as np
 
 from .scenario_params import NOMINAL, ScenarioParams
 from .vehicle import CustomPoliteVehicle
+
+# Register the environment when module is imported
+try:
+    register(
+        id="SimulatedEnv-v0",
+        entry_point="src.simulated_env:SimulatedEnv",
+    )
+except Exception:
+    pass  # Already registered
 
 
 class SimulatedEnv(RoundaboutEnv):
@@ -27,7 +37,7 @@ class SimulatedEnv(RoundaboutEnv):
         config: Optional[dict] = None,
         scenario_params: Optional[ScenarioParams] = None,
         render_mode: Optional[str] = None,
-        seed: int=42
+        seed: Optional[int] = 42
     ):
         """Initialize the simulated environment.
         
@@ -35,22 +45,48 @@ class SimulatedEnv(RoundaboutEnv):
             config: Optional environment configuration dictionary.
             scenario_params: Optional ScenarioParams for fuzzing. Defaults to NOMINAL.
             render_mode: Rendering mode ("human", "rgb_array", or None).
+            seed: Random seed for reproducibility.
         """
         if scenario_params is None:
             scenario_params = NOMINAL
         
-        
-        self.np_random = np.random.default_rng(seed)
-        self.torch_rng = torch.Generator()
-        if seed is not None:
-            self.torch_rng.manual_seed(seed)
-
         self.scenario_params = scenario_params
+        self._init_seed = seed
+        self.torch_rng = torch.Generator()
+        self._seed_rngs(seed)
+        
         super().__init__(config=config, render_mode=render_mode)
+
+    def _seed_rngs(self, seed: Optional[int]) -> None:
+        """Seed all random number generators for reproducibility."""
+        if seed is not None:
+            self.np_random = np.random.default_rng(seed)
+            self.torch_rng.manual_seed(seed)
+            torch.manual_seed(seed)
+        else:
+            self.np_random = np.random.default_rng()
+
+    def reset(self, *, seed: Optional[int] = None, options: Optional[dict] = None):
+        """Reset the environment with optional seed for reproducibility.
+        
+        Args:
+            seed: If provided, seeds all RNGs for reproducible episodes.
+            options: Additional reset options.
+        
+        Returns:
+            observation, info tuple
+        """
+        if seed is not None:
+            self._seed_rngs(seed)
+        elif self._init_seed is not None:
+            # Re-seed with initial seed for consistent behavior across resets
+            # Comment out this line if you want different episodes on each reset
+            pass  # Don't re-seed by default to get varied episodes
+        
+        return super().reset(seed=seed, options=options)
 
     def _make_vehicles(self) -> None:
         """Create vehicles with scenario-dependent parameters."""
-        torch.manual_seed(self.seed)   # store seed in environment
         position_deviation = 2.0
         min_speed, max_speed = 0.0, 32.0
 

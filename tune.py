@@ -32,6 +32,7 @@ from src import (
     NormalParam,
     ProbabilityParam,
     BetaParam,
+    SimulatedEnv,
     SQRT_2,
 )
 
@@ -129,16 +130,22 @@ def objective(
 ) -> float:
     """Optuna objective function."""
     
+    print(f"\n[Trial {trial.number}] Starting...")
+    
     setup = create_scenario_params()
     
     # Create environments
+    print(f"[Trial {trial.number}] Creating environments...")
     env = Monitor(gym.make("SimulatedEnv-v0", render_mode=None, scenario_params=setup))
     eval_env = Monitor(gym.make("SimulatedEnv-v0", render_mode=None, scenario_params=setup))
+    print(f"[Trial {trial.number}] Environments created.")
     
     # Sample hyperparameters
     params = sample_dqn_params(trial)
+    print(f"[Trial {trial.number}] Params: lr={params['learning_rate']:.6f}, batch={params['batch_size']}")
     
     # Create model
+    print(f"[Trial {trial.number}] Creating model...")
     model = DQN(
         "MlpPolicy",
         env,
@@ -146,6 +153,7 @@ def objective(
         device=device,
         **params,
     )
+    print(f"[Trial {trial.number}] Model created.")
     
     # Evaluation callback with pruning
     eval_callback = TrialEvalCallback(
@@ -159,9 +167,11 @@ def objective(
     
     nan_encountered = False
     try:
-        model.learn(total_timesteps=timesteps, callback=eval_callback)
+        print(f"[Trial {trial.number}] Starting training for {timesteps} timesteps...")
+        model.learn(total_timesteps=timesteps, callback=eval_callback, progress_bar=False)
+        print(f"[Trial {trial.number}] Training complete. Best reward: {eval_callback.best_mean_reward:.2f}")
     except Exception as e:
-        print(f"Trial {trial.number} failed: {e}")
+        print(f"[Trial {trial.number}] Failed: {e}")
         nan_encountered = True
     finally:
         env.close()
@@ -171,6 +181,7 @@ def objective(
         return float("-inf")
     
     if eval_callback.is_pruned:
+        print(f"[Trial {trial.number}] Pruned.")
         raise optuna.exceptions.TrialPruned()
     
     return eval_callback.best_mean_reward
