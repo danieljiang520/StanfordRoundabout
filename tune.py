@@ -23,8 +23,9 @@ from optuna.pruners import MedianPruner
 from optuna.samplers import TPESampler
 import torch
 from stable_baselines3 import DQN
-from stable_baselines3.common.callbacks import EvalCallback
+from stable_baselines3.common.callbacks import EvalCallback, BaseCallback
 from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 
 from src import (
     ScenarioParams,
@@ -64,8 +65,8 @@ def sample_dqn_params(trial: optuna.Trial) -> dict[str, Any]:
         "large": [512, 256, 128],
     }[net_arch_type]
     
-    # Learning parameters
-    learning_rate = trial.suggest_float("learning_rate", 1e-5, 1e-2, log=True)
+    # Learning parameters (narrower range to avoid instability)
+    learning_rate = trial.suggest_float("learning_rate", 1e-5, 5e-3, log=True)
     batch_size = trial.suggest_categorical("batch_size", [16, 32, 64, 128, 256])
     gamma = trial.suggest_float("gamma", 0.7, 0.999)
     
@@ -99,6 +100,22 @@ def sample_dqn_params(trial: optuna.Trial) -> dict[str, Any]:
     }
 
 
+class ProgressCallback(BaseCallback):
+    """Callback to print training progress."""
+    
+    def __init__(self, trial_num: int, total_timesteps: int, print_freq: int = 10000):
+        super().__init__()
+        self.trial_num = trial_num
+        self.total_timesteps = total_timesteps
+        self.print_freq = print_freq
+    
+    def _on_step(self) -> bool:
+        if self.num_timesteps % self.print_freq == 0:
+            pct = 100 * self.num_timesteps / self.total_timesteps
+            print(f"[Trial {self.trial_num}] {self.num_timesteps}/{self.total_timesteps} ({pct:.0f}%)")
+        return True
+
+
 class TrialEvalCallback(EvalCallback):
     """Callback for pruning unpromising trials."""
     
@@ -109,15 +126,20 @@ class TrialEvalCallback(EvalCallback):
         self.is_pruned = False
     
     def _on_step(self) -> bool:
+        # Check if evaluation happened this step
+        old_best = self.best_mean_reward
         result = super()._on_step()
         
-        if self.eval_idx > 0:
+        # If best reward changed, an evaluation occurred
+        if self.best_mean_reward != old_best:
+            print(f"  [Eval {self.eval_idx}] Mean reward: {self.last_mean_reward:.2f}, Best: {self.best_mean_reward:.2f}")
             self.trial.report(self.last_mean_reward, self.eval_idx)
+            self.eval_idx += 1
+            
             if self.trial.should_prune():
                 self.is_pruned = True
                 return False
         
-        self.eval_idx += 1
         return result
 
 
@@ -155,7 +177,8 @@ def objective(
     )
     print(f"[Trial {trial.number}] Model created.")
     
-    # Evaluation callback with pruning
+    # Callbacks
+    progress_callback = ProgressCallback(trial.number, timesteps, print_freq=10000)
     eval_callback = TrialEvalCallback(
         trial,
         eval_env,
@@ -168,11 +191,23 @@ def objective(
     nan_encountered = False
     try:
         print(f"[Trial {trial.number}] Starting training for {timesteps} timesteps...")
-        model.learn(total_timesteps=timesteps, callback=eval_callback, progress_bar=False)
-        print(f"[Trial {trial.number}] Training complete. Best reward: {eval_callback.best_mean_reward:.2f}")
+        model.learn(total_timesteps=timesteps, callback=[progress_callback, eval_callback], progress_bar=False)
+        
+        # Get the reward - use last_mean_reward if best is not set
+        reward = eval_callback.best_mean_reward
+        if reward == float("-inf") and hasattr(eval_callback, 'last_mean_reward'):
+            reward = eval_callback.last_mean_reward
+        
+        # Check for invalid reward
+        if reward is None or np.isnan(reward) or reward == float("-inf"):
+            print(f"[Trial {trial.number}] Invalid reward ({reward}), marking as failed.")
+            nan_encountered = True
+        else:
+            print(f"[Trial {trial.number}] Training complete. Best reward: {reward:.2f}")
     except Exception as e:
         print(f"[Trial {trial.number}] Failed: {e}")
         nan_encountered = True
+        reward = None
     finally:
         env.close()
         eval_env.close()
@@ -184,7 +219,7 @@ def objective(
         print(f"[Trial {trial.number}] Pruned.")
         raise optuna.exceptions.TrialPruned()
     
-    return eval_callback.best_mean_reward
+    return reward
 
 
 def tune(
