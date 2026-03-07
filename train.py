@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 
 import gymnasium as gym
+import torch
 from stable_baselines3 import DQN
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
 
@@ -76,6 +77,7 @@ def train(
     buffer_size: int = 15_000,
     batch_size: int = 32,
     gamma: float = 0.8,
+    device: str = "auto",
 ):
     """
     Train the DQN model.
@@ -90,6 +92,7 @@ def train(
         buffer_size: Size of replay buffer
         batch_size: Batch size for training
         gamma: Discount factor
+        device: Device to use ("auto", "cuda", "cpu", or "mps" for Apple Silicon)
     """
     save_path = Path(save_dir)
     save_path.mkdir(exist_ok=True)
@@ -104,12 +107,29 @@ def train(
     # Create eval environment (separate instance)
     eval_env = gym.make("SimulatedEnv-v0", render_mode=None, scenario_params=setup)
 
+    # Determine actual device
+    if device == "auto":
+        if torch.cuda.is_available():
+            actual_device = "cuda"
+        elif torch.backends.mps.is_available():
+            actual_device = "mps"
+        else:
+            actual_device = "cpu"
+    else:
+        actual_device = device
+
+    print(f"\nDevice: {actual_device}")
+    if actual_device == "cuda":
+        print(f"  GPU: {torch.cuda.get_device_name(0)}")
+    elif actual_device == "mps":
+        print("  Using Apple Silicon GPU (MPS)")
+
     if resume and model_path.exists():
-        print(f"Resuming training from {model_path}")
-        model = DQN.load(model_path, env=env)
+        print(f"\nResuming training from {model_path}")
+        model = DQN.load(model_path, env=env, device=actual_device)
         model.learning_rate = learning_rate
     else:
-        print("Creating new model")
+        print("\nCreating new model")
         model = DQN(
             "MlpPolicy",
             env,
@@ -123,6 +143,7 @@ def train(
             gradient_steps=1,
             target_update_interval=50,
             verbose=1,
+            device=actual_device,
         )
 
     # Setup callbacks
@@ -144,6 +165,7 @@ def train(
 
     # Train
     print(f"\nTraining for {timesteps:,} timesteps...")
+    print(f"  Device: {actual_device}")
     print(f"  Learning rate: {learning_rate}")
     print(f"  Buffer size: {buffer_size:,}")
     print(f"  Batch size: {batch_size}")
@@ -224,6 +246,13 @@ def main():
         default=0.8,
         help="Discount factor"
     )
+    parser.add_argument(
+        "--device", "-d",
+        type=str,
+        default="auto",
+        choices=["auto", "cuda", "mps", "cpu"],
+        help="Device to use (auto detects GPU)"
+    )
 
     args = parser.parse_args()
 
@@ -237,6 +266,7 @@ def main():
         buffer_size=args.buffer_size,
         batch_size=args.batch_size,
         gamma=args.gamma,
+        device=args.device,
     )
 
 
