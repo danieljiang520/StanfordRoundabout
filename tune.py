@@ -230,6 +230,7 @@ def tune(
     device: str = "auto",
     study_name: str = "dqn_roundabout",
     storage: Optional[str] = None,
+    n_jobs: int = 1,
 ):
     """Run hyperparameter tuning."""
     
@@ -244,6 +245,8 @@ def tune(
     
     print(f"Device: {device}")
     print(f"Running {n_trials} trials, {timesteps:,} timesteps each")
+    if n_jobs != 1:
+        print(f"Parallel jobs: {n_jobs if n_jobs > 0 else 'all cores'}")
     print()
     
     # Create Optuna study
@@ -263,6 +266,7 @@ def tune(
         study.optimize(
             lambda trial: objective(trial, timesteps, n_eval_episodes, eval_freq, device),
             n_trials=n_trials,
+            n_jobs=n_jobs,
             show_progress_bar=True,
         )
     except KeyboardInterrupt:
@@ -359,6 +363,12 @@ def main():
         default=None,
         help="Optuna storage URL (e.g., sqlite:///optuna.db)"
     )
+    parser.add_argument(
+        "--n-jobs", "-j",
+        type=int,
+        default=1,
+        help="Number of parallel trials (use -1 for all CPU cores)"
+    )
     
     args = parser.parse_args()
     
@@ -370,6 +380,7 @@ def main():
         device=args.device,
         study_name=args.study_name,
         storage=args.storage,
+        n_jobs=args.n_jobs,
     )
 
 

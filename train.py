@@ -17,6 +17,8 @@ import gymnasium as gym
 import torch
 from stable_baselines3 import DQN
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
+from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
+from stable_baselines3.common.monitor import Monitor
 
 from src import (
     ScenarioParams,
@@ -78,6 +80,7 @@ def train(
     batch_size: int = 32,
     gamma: float = 0.8,
     device: str = "auto",
+    n_envs: int = 1,
 ):
     """
     Train the DQN model.
@@ -93,6 +96,7 @@ def train(
         batch_size: Batch size for training
         gamma: Discount factor
         device: Device to use ("auto", "cuda", "cpu", or "mps" for Apple Silicon)
+        n_envs: Number of parallel environments (1 = single env, >1 = SubprocVecEnv)
     """
     save_path = Path(save_dir)
     save_path.mkdir(exist_ok=True)
@@ -101,11 +105,22 @@ def train(
     # Create scenario params
     setup = create_scenario_params()
 
-    # Create training environment
-    env = gym.make("SimulatedEnv-v0", render_mode=None, scenario_params=setup)
+    # Helper to create a single environment
+    def make_env(seed=None):
+        def _init():
+            env = gym.make("SimulatedEnv-v0", render_mode=None, scenario_params=setup, seed=seed)
+            return Monitor(env)
+        return _init
 
-    # Create eval environment (separate instance)
-    eval_env = gym.make("SimulatedEnv-v0", render_mode=None, scenario_params=setup)
+    # Create training environment(s)
+    if n_envs == 1:
+        env = DummyVecEnv([make_env()])
+    else:
+        env = SubprocVecEnv([make_env(seed=i) for i in range(n_envs)])
+        print(f"Using {n_envs} parallel environments")
+
+    # Create eval environment (always single env)
+    eval_env = DummyVecEnv([make_env(seed=999)])
 
     # Determine actual device
     if device == "auto":
@@ -166,6 +181,7 @@ def train(
     # Train
     print(f"\nTraining for {timesteps:,} timesteps...")
     print(f"  Device: {actual_device}")
+    print(f"  Parallel envs: {n_envs}")
     print(f"  Learning rate: {learning_rate}")
     print(f"  Buffer size: {buffer_size:,}")
     print(f"  Batch size: {batch_size}")
@@ -253,6 +269,12 @@ def main():
         choices=["auto", "cuda", "mps", "cpu"],
         help="Device to use (auto detects GPU)"
     )
+    parser.add_argument(
+        "--n-envs", "-n",
+        type=int,
+        default=1,
+        help="Number of parallel environments (>1 uses SubprocVecEnv)"
+    )
 
     args = parser.parse_args()
 
@@ -267,6 +289,7 @@ def main():
         batch_size=args.batch_size,
         gamma=args.gamma,
         device=args.device,
+        n_envs=args.n_envs,
     )
 
 
