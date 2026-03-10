@@ -103,10 +103,18 @@ class ScenarioFuzzer:
         if seed is not None:
             np.random.seed(seed)
             torch.manual_seed(seed)
-            # Seed environment's internal random generator
+            # Torch generator used for sampling in this class
             self.torch_rng = torch.Generator().manual_seed(seed)
-            if hasattr(env.unwrapped, 'np_random'):
-                env.unwrapped.np_random.seed(seed)
+
+            # Seed environment's RNG in a way that works for both
+            # legacy RandomState and new NumPy Generator APIs
+            if hasattr(env.unwrapped, "np_random"):
+                rng = env.unwrapped.np_random
+                # New-style NumPy Generator has no .seed method
+                if isinstance(rng, np.random.Generator):
+                    env.reset(seed=seed)
+                else:
+                    rng.seed(seed)
             else:
                 # Fallback: reset environment with seed
                 env.reset(seed=seed)
