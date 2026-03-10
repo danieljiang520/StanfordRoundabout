@@ -321,6 +321,130 @@ class ScenarioFuzzer:
             "realized_params": realized_params
         }
     
+    def replay_rollout(
+        self,
+        obs_noise: dict,
+        action_override: Optional[Dict[int, int]] = None,
+        seed: Optional[int] = None,
+        speed_scale: float = 16.0,
+    ) -> dict:
+        """Re-run a trajectory with fixed observation noise and optional action overrides.
+
+        Used by per-timestep sensitivity analysis (Algorithm 11.1) and
+        Shapley values (Algorithm 11.4). All randomness is controlled via
+        the provided noise and overrides — no stochastic action fuzzing.
+
+        Args:
+            obs_noise: Dict with 'position_x', 'position_y', 'velocity_x',
+                'velocity_y' (each np.ndarray of shape (4,)).
+            action_override: Optional mapping {timestep: action_int}. At
+                non-overridden steps the policy chooses deterministically.
+            seed: Env reset seed for reproducible initial conditions.
+            speed_scale: Reference speed for avg_speed_ratio.
+
+        Returns:
+            Dict with robustness, is_failure, metrics, actions.
+        """
+        env = self.env
+        model = self.model
+        if action_override is None:
+            action_override = {}
+
+        num_cars = 4
+        noise_px = obs_noise["position_x"]
+        noise_py = obs_noise["position_y"]
+        noise_vx = obs_noise["velocity_x"]
+        noise_vy = obs_noise["velocity_y"]
+
+        done = truncated = False
+        if seed is not None:
+            obs, info = env.reset(seed=seed)
+        else:
+            obs, info = env.reset()
+
+        velocities: List[float] = []
+        min_dist = float("inf")
+        lane_changes = 0
+        on_road_steps = 0
+        total_steps = 0
+        cumulative_reward = 0.0
+        prev_action = None
+        actions_taken: List[int] = []
+
+        unwrapped = env.unwrapped
+        ego = unwrapped.vehicle
+        policy_freq = unwrapped.config.get("policy_frequency", 1)
+
+        t = 0
+        while not (done or truncated):
+            obs_noisy = obs.copy()
+            obs_noisy[1:num_cars + 1, 1] += noise_px
+            obs_noisy[1:num_cars + 1, 2] += noise_py
+            obs_noisy[1:num_cars + 1, 3] += noise_vx
+            obs_noisy[1:num_cars + 1, 4] += noise_vy
+
+            if t in action_override:
+                action = action_override[t]
+            else:
+                action, _ = model.predict(obs_noisy, deterministic=True)
+
+            actions_taken.append(int(np.asarray(action).flat[0]))
+
+            obs, reward, done, truncated, info = env.step(action)
+
+            cumulative_reward += float(reward)
+            total_steps += 1
+            ego = unwrapped.vehicle
+            v = np.sqrt(ego.velocity[0] ** 2 + ego.velocity[1] ** 2)
+            velocities.append(v)
+
+            for vehicle in unwrapped.road.vehicles:
+                if vehicle is not ego:
+                    d = np.linalg.norm(ego.position - vehicle.position)
+                    if d < min_dist:
+                        min_dist = d
+
+            if ego.on_road:
+                on_road_steps += 1
+
+            a = actions_taken[-1]
+            if prev_action is not None and a != prev_action and a in [0, 2]:
+                lane_changes += 1
+            prev_action = a
+            t += 1
+
+        velocities_arr = np.array(velocities)
+        dt = 1.0 / policy_freq
+        accel = np.diff(velocities_arr) / dt
+        jerk = np.diff(accel) / dt
+
+        decel = np.clip(-accel, 0, None)
+        n_dec = len(decel)
+        brake_severity = float(np.sum(decel ** 2) / n_dec) if n_dec > 0 else 0.0
+        mean_vel = float(np.mean(velocities_arr)) if len(velocities_arr) > 0 else 0.0
+        jerk_score = float(np.mean(jerk ** 2)) if len(jerk) > 0 else 0.0
+        on_road_frac = on_road_steps / max(total_steps, 1)
+
+        trajectory_metrics = {
+            "success": 0.0 if unwrapped.vehicle.crashed else 1.0,
+            "min_distance": float(min_dist) if min_dist != float("inf") else 0.0,
+            "avg_speed_ratio": mean_vel / speed_scale,
+            "jerk_score": jerk_score,
+            "brake_severity": brake_severity,
+            "lane_changes": lane_changes,
+            "on_road_frac": on_road_frac,
+            "cumulative_reward": cumulative_reward,
+        }
+
+        env.close()
+
+        return {
+            "is_failure": trajectory_metrics["success"] < 1e-2,
+            "robustness": compute_robustness(trajectory_metrics, weights=self.robustness_weights),
+            "metrics": trajectory_metrics,
+            "actions": actions_taken,
+        }
+
     def _compute_initial_log_prob(self, env, env_params, eps: float):
         """Compute log-prob for initial environment state (vectorized)."""
         log_prob = 0.0
