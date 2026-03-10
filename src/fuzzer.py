@@ -124,6 +124,7 @@ class ScenarioFuzzer:
         eps: float = 1e-10,
         speed_scale: float = 16.0,
         compute_log_prob: bool = True,
+        return_sensitivity: bool = False
     ) -> dict:
         """Run one episode with noise injection and compute log-probability.
         
@@ -196,6 +197,9 @@ class ScenarioFuzzer:
         unwrapped = env.unwrapped
         ego = unwrapped.vehicle
         policy_freq = unwrapped.config.get("policy_frequency", 1)
+        
+        passed_actions = []
+        passed_available = []
 
         while not (done or truncated):
             # Add sensor noise (vectorized)
@@ -208,12 +212,17 @@ class ScenarioFuzzer:
             action, _states = model.predict(obs_noisy, deterministic=True)
 
             # High-level action fuzzing
+            if return_sensitivity:
+                passed_available.append(unwrapped.action_type.get_available_actions())
             if np.random.random() < p_noise:
                 available = unwrapped.action_type.get_available_actions()
                 action = unwrapped.np_random.choice(available)
                 action_prob = p_noise / len(available)
             else:
                 action_prob = 1.0 - p_noise
+                
+            if return_sensitivity:
+                passed_actions.append(action)
 
             if compute_log_prob:
                 action_probs.append(action_prob)
@@ -276,8 +285,26 @@ class ScenarioFuzzer:
             "on_road_frac": on_road_frac,
             "cumulative_reward": cumulative_reward,
         }
+        
+        # also return realized scenario params
+        realized_params = {
+            "initial_position_x": noise_position_x, 
+            "initial_position_y": noise_position_y, 
+            "velocity_x": noise_velocity_x, 
+            "velocity_y": noise_velocity_y,
+            "high_lvl_actions": {"actions": passed_actions, "available": passed_available},
+            "initial_speed": env.unwrapped.vehicle.speed,
+            "initial_heading": ["exr", "nxr", "wxr", "sxr"][env.unwrapped.road.vehicles[0].heading_idx],
+            "politeness": [env.unwrapped.road.vehicles[i].POLITENESS for i in range(1,5)],
+            "other_vehicles_speed": [env.unwrapped.road.vehicles[i].speed for i in range(1, 5)],
+            "entering_vehicle_position": env.unwrapped.road.vehicles[-1].position[0], 
+    
+            
+        }
 
         env.close()
+        
+        
 
         return {
             "log_prob": float(log_prob) if not isinstance(log_prob, float) else log_prob,
@@ -285,6 +312,13 @@ class ScenarioFuzzer:
             "is_failure": trajectory_metrics["success"] < 1e-2,
             "robustness": compute_robustness(trajectory_metrics, weights=self.robustness_weights),
             "metrics": trajectory_metrics,
+        } if not return_sensitivity else {
+            "log_prob": float(log_prob) if not isinstance(log_prob, float) else log_prob,
+            "nominal_log_prob": float(nominal_log_prob) if not isinstance(nominal_log_prob, float) else nominal_log_prob,
+            "is_failure": trajectory_metrics["success"] < 1e-2,
+            "robustness": compute_robustness(trajectory_metrics, weights=self.robustness_weights),
+            "metrics": trajectory_metrics,
+            "realized_params": realized_params
         }
     
     def _compute_initial_log_prob(self, env, env_params, eps: float):
