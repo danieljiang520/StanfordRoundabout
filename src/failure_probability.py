@@ -1,11 +1,12 @@
-"""Bayesian failure probability estimation from rollout logs.
+"""Failure probability estimation from rollout logs.
 
-Uses a Beta posterior to estimate p_fail with uncertainty quantification.
-At 33% failure rates, direct/Bayesian estimation is statistically efficient
-and preferable over importance sampling or adaptive methods (which are
-designed for rare-event settings with pfail << 5%).
+Provides three estimators (textbook Ch. 7):
+  - Direct / MLE  (Eq 7.2)
+  - Bayesian Beta-Bernoulli posterior  (Eq 7.4, Algorithm 7.2)
+  - Importance sampling  (Eq 7.12, Algorithm 7.3)
 """
 
+import numpy as np
 from scipy.stats import beta as beta_dist
 
 
@@ -63,6 +64,68 @@ def estimate_failure_probability(logs, prior_alpha=1.0, prior_beta=1.0, target_d
         "p_below_delta": p_below,
         "posterior_alpha": post_alpha,
         "posterior_beta": post_beta,
+    }
+
+
+def importance_sampling_estimate(is_logs, self_normalized=False):
+    """Estimate failure probability via importance sampling (textbook Eq 7.12).
+
+    Trajectories must be sampled from a proposal distribution q(τ) that
+    differs from the nominal p(τ).  Each log entry needs ``log_prob``
+    (log q), ``nominal_log_prob`` (log p), and ``is_failure``.
+
+    Standard IS  (Eq 7.12):  p_fail ≈ (1/m) Σ w_i · 1{failure_i}
+    Self-norm IS (Eq 7.33):  p_fail ≈ Σ w_i·1{fail_i} / Σ w_i
+
+    where w_i = p(τ_i) / q(τ_i) = exp(nominal_log_prob - log_prob).
+
+    Args:
+        is_logs: List of rollout dicts from a proposal distribution.
+            Each must contain 'log_prob', 'nominal_log_prob', 'is_failure'.
+        self_normalized: If True, use self-normalized IS (Eq 7.33 /
+            Algorithm 7.9). More robust when log-prob densities are
+            approximate, but introduces a small bias.
+
+    Returns:
+        Dict with p_fail_is, is_std, ess, n_proposal_failures, n_rollouts,
+        weights.
+    """
+    m = len(is_logs)
+    empty = {"p_fail_is": 0.0, "is_std": 0.0, "ess": 0.0,
+             "n_proposal_failures": 0, "n_rollouts": 0, "weights": np.array([])}
+    if m == 0:
+        return empty
+
+    log_w = np.array([r["nominal_log_prob"] - r["log_prob"] for r in is_logs])
+    failures = np.array([1.0 if r["is_failure"] else 0.0 for r in is_logs])
+
+    if self_normalized:
+        # Shift for numerical stability — cancels in the ratio (Eq 7.33)
+        log_w_stable = log_w - np.max(log_w)
+        w = np.exp(log_w_stable)
+        w_norm = w / np.sum(w)
+        p_fail_is = float(np.sum(w_norm * failures))
+    else:
+        # Standard IS (Eq 7.12) — needs true weights, no shift allowed
+        w = np.exp(np.clip(log_w, -500, 500))
+        p_fail_is = float(np.mean(w * failures))
+
+    # Standard error of the IS estimator
+    is_var = float(np.var(w * failures, ddof=1) / m)
+    is_std = float(np.sqrt(max(is_var, 0.0)))
+
+    # Effective sample size (Exercise 7.7): ESS = (Σ w_i·f_i)² / Σ (w_i·f_i)²
+    wf = w * failures
+    wf_sum = np.sum(wf)
+    ess = float(wf_sum ** 2 / np.sum(wf ** 2)) if wf_sum > 0 else 0.0
+
+    return {
+        "p_fail_is": p_fail_is,
+        "is_std": is_std,
+        "ess": ess,
+        "n_proposal_failures": int(np.sum(failures)),
+        "n_rollouts": m,
+        "weights": w,
     }
 
 
