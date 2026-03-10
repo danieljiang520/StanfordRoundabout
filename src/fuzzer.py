@@ -462,18 +462,18 @@ class ScenarioFuzzer:
         
         # Politeness log-prob (Beta distribution)
         pol_ab = env_params.politeness.ab
-        alpha, beta_param = float(pol_ab[0]), float(pol_ab[0]) + float(pol_ab[1])
+        alpha, beta_param = float(pol_ab[0]), float(pol_ab[1])
         for i in range(1, 5):
             pol = env.unwrapped.road.vehicles[i].POLITENESS
             if 0 < pol < 1:
-                log_prob += (alpha - 1) * np.log(pol) + (beta_param - alpha - 1) * np.log(1 - pol)
+                log_prob += (alpha - 1) * np.log(pol) + (beta_param  - 1) * np.log(1 - pol)
         
         nom_ab = NOMINAL.politeness.ab
-        nom_alpha, nom_beta = float(nom_ab[0]), float(nom_ab[0]) + float(nom_ab[1])
+        nom_alpha, nom_beta = float(nom_ab[0]), float(nom_ab[1])
         for i in range(1, 5):
             pol = env.unwrapped.road.vehicles[i].POLITENESS
             if 0 < pol < 1:
-                nominal_log_prob += (nom_alpha - 1) * np.log(pol) + (nom_beta - nom_alpha - 1) * np.log(1 - pol)
+                nominal_log_prob += (nom_alpha - 1) * np.log(pol) + (nom_beta - 1) * np.log(1 - pol)
         
         # Entering vehicle position
         log_prob += float(torch.log(torch.clamp(

@@ -57,7 +57,7 @@ class CustomPoliteVehicle(IDMVehicle):
             tensor_p = torch.tensor(politeness, dtype=torch.float)
 
         alpha = tensor_p[0]
-        beta = alpha + tensor_p[1]
+        beta = tensor_p[1]
 
         # Differentiable sample
         dist = torch.distributions.Beta(alpha, beta)

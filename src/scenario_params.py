@@ -56,7 +56,7 @@ class BetaParam:
     """Beta distribution parameters.
     
     Attributes:
-        ab: Two-element [alpha, beta-alpha] for Beta(alpha, beta).
+        ab: Two-element [alpha, beta] for Beta(alpha, beta).
     """
     ab: ParamType
 
