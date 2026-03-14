@@ -80,9 +80,13 @@ venv.bak/
 logs/
 tensorboard/
 wandb/
-*.mp4
-*.gif
-videos/
+# *.mp4
+# *.gif
+# Ignore all videos by default
+roundabout_dqn/videos/
+roundabout_dqn/videos/*.mp4
+roundabout_dqn/videos/*.gif
+
 
 # mypy
 .mypy_cache/
