@@ -627,3 +627,138 @@ class ScenarioFuzzer:
         if not self._history:
             return None
         return min(self._history, key=lambda r: r["objective"])
+
+    def mcmc_sample(
+        self,
+        n_iterations: int = 1000,
+        burn_in: int = 200,
+        n_rollouts_per_step: int = 5,
+        proposal_std: float = 0.1,
+        failure_weight: float = 10.0,
+        initial_params: Optional[np.ndarray] = None,
+        verbose: bool = True,
+    ) -> Dict[str, Any]:
+        """Sample from the failure distribution using Metropolis-Hastings MCMC.
+        
+        The target distribution is π(θ) ∝ p(θ) * [1 + failure_weight * P(failure|θ)],
+        which overweights parameter configurations that lead to failures.
+        
+        Args:
+            n_iterations: Total MCMC iterations (including burn-in).
+            burn_in: Number of initial samples to discard.
+            n_rollouts_per_step: Rollouts per iteration to estimate failure rate.
+            proposal_std: Standard deviation for Gaussian proposal (relative to bounds).
+            failure_weight: Weight for failure probability in target distribution.
+            initial_params: Starting parameters. If None, uses config.initial_guess.
+            verbose: Whether to print progress.
+        
+        Returns:
+            Dict with:
+                - samples: List of accepted parameter configurations
+                - failures: List of failure trajectories discovered
+                - acceptance_rate: Fraction of proposals accepted
+                - chain: Full chain including burn-in (for diagnostics)
+        """
+        if initial_params is None:
+            initial_params = np.array(self.config.initial_guess)
+        
+        bounds = np.array(self.config.bounds)
+        lower, upper = bounds[:, 0], bounds[:, 1]
+        ranges = upper - lower
+        
+        # Initialize
+        current_params = initial_params.copy()
+        self._apply_params(current_params)
+        
+        # Estimate initial failure rate
+        results = [self.rollout(compute_log_prob=True) for _ in range(n_rollouts_per_step)]
+        current_failure_rate = np.mean([r["is_failure"] for r in results])
+        current_log_prob = np.mean([r["nominal_log_prob"] for r in results])
+        
+        # Target log-density (unnormalized)
+        def log_target(failure_rate, log_prob):
+            return log_prob + np.log(1 + failure_weight * failure_rate)
+        
+        current_log_target = log_target(current_failure_rate, current_log_prob)
+        
+        # Storage
+        chain = []
+        samples = []  # Post burn-in samples
+        all_failures = []
+        n_accepted = 0
+        
+        if verbose:
+            print(f"Starting MCMC: {n_iterations} iterations, {burn_in} burn-in")
+            print(f"Initial failure rate: {current_failure_rate:.2%}")
+        
+        for i in range(n_iterations):
+            # Propose new parameters (Gaussian proposal, clipped to bounds)
+            proposal = current_params + proposal_std * ranges * np.random.randn(len(current_params))
+            proposal = np.clip(proposal, lower, upper)
+            
+            # Evaluate proposal
+            self._apply_params(proposal)
+            results = [self.rollout(compute_log_prob=True) for _ in range(n_rollouts_per_step)]
+            proposal_failure_rate = np.mean([r["is_failure"] for r in results])
+            proposal_log_prob = np.mean([r["nominal_log_prob"] for r in results])
+            proposal_log_target = log_target(proposal_failure_rate, proposal_log_prob)
+            
+            # Collect failures
+            for r in results:
+                if r["is_failure"]:
+                    r["mcmc_iteration"] = i
+                    r["params"] = proposal.copy()
+                    all_failures.append(r)
+            
+            # Metropolis-Hastings acceptance
+            log_alpha = proposal_log_target - current_log_target
+            
+            if np.log(np.random.rand()) < log_alpha:
+                # Accept
+                current_params = proposal
+                current_failure_rate = proposal_failure_rate
+                current_log_prob = proposal_log_prob
+                current_log_target = proposal_log_target
+                n_accepted += 1
+            else:
+                # Reject - revert environment params
+                self._apply_params(current_params)
+            
+            # Store
+            chain.append({
+                "params": current_params.copy(),
+                "failure_rate": current_failure_rate,
+                "log_prob": current_log_prob,
+                "log_target": current_log_target,
+            })
+            
+            if i >= burn_in:
+                samples.append({
+                    "params": current_params.copy(),
+                    "failure_rate": current_failure_rate,
+                    "log_prob": current_log_prob,
+                })
+            
+            # Progress
+            if verbose and (i + 1) % 100 == 0:
+                acc_rate = n_accepted / (i + 1)
+                print(f"  Iteration {i+1}/{n_iterations}: "
+                      f"acceptance={acc_rate:.2%}, "
+                      f"failures={len(all_failures)}, "
+                      f"current_fail_rate={current_failure_rate:.2%}")
+        
+        acceptance_rate = n_accepted / n_iterations
+        
+        if verbose:
+            print(f"\nMCMC complete:")
+            print(f"  Acceptance rate: {acceptance_rate:.2%}")
+            print(f"  Total failures found: {len(all_failures)}")
+            print(f"  Post burn-in samples: {len(samples)}")
+        
+        return {
+            "samples": samples,
+            "failures": all_failures,
+            "acceptance_rate": acceptance_rate,
+            "chain": chain,
+            "burn_in": burn_in,
+        }
