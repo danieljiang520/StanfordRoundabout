@@ -553,6 +553,7 @@ class ScenarioFuzzer:
         self._apply_params(x)
         
         results = [self.rollout() for _ in range(self.config.n_samples)]
+        failures = [r for r in results if r["is_failure"]]
         
         avg_robustness = np.mean([r["robustness"] for r in results])
         avg_nominal_log_prob = np.mean([r["nominal_log_prob"] for r in results])
@@ -564,6 +565,7 @@ class ScenarioFuzzer:
             "eval": self._eval_count,
             "params": x.copy(),
             "robustness": avg_robustness,
+            "failures": failures, 
             "nominal_log_prob": avg_nominal_log_prob,
             "objective": obj,
         }

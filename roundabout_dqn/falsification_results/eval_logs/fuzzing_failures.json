@@ -1,0 +1,2892 @@
+{
+  "sorted_failures_with_id": [
+    {
+      "id": 120,
+      "item": {
+        "log_prob": -335.9090881347656,
+        "nominal_log_prob": -335.90911865234375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.223676998989404,
+          "avg_speed_ratio": 0.856449846794588,
+          "jerk_score": 29.235431116610847,
+          "brake_severity": 18.101709431159858,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 97,
+      "item": {
+        "log_prob": -341.27508544921875,
+        "nominal_log_prob": -341.2784729003906,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 3.6467203319216863,
+          "avg_speed_ratio": 0.9249011462323544,
+          "jerk_score": 8.687384598481001,
+          "brake_severity": 1.77548060248667,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 2.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 134,
+      "item": {
+        "log_prob": -342.8898010253906,
+        "nominal_log_prob": -342.88983154296875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.187581269673587,
+          "avg_speed_ratio": 0.8486097509965579,
+          "jerk_score": 33.64960392535515,
+          "brake_severity": 21.037309485787357,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 69,
+      "item": {
+        "log_prob": -357.1438293457031,
+        "nominal_log_prob": -357.6271667480469,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.199054037987795,
+          "avg_speed_ratio": 0.9653631182318879,
+          "jerk_score": 0.9069513392946806,
+          "brake_severity": 0.0,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 2.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 15,
+      "item": {
+        "log_prob": -391.39715576171875,
+        "nominal_log_prob": -362.5419006347656,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.185724015785993,
+          "avg_speed_ratio": 0.7636249803602158,
+          "jerk_score": 32.95780513999216,
+          "brake_severity": 4.422539769338813,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.0833333333333335
+        }
+      }
+    },
+    {
+      "id": 57,
+      "item": {
+        "log_prob": -375.28759765625,
+        "nominal_log_prob": -375.60784912109375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 2.557750475337279,
+          "avg_speed_ratio": 0.9656536175100414,
+          "jerk_score": 0.8918019470337235,
+          "brake_severity": 0.0,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 2.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 140,
+      "item": {
+        "log_prob": -400.66766357421875,
+        "nominal_log_prob": -400.66766357421875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.1633320508820875,
+          "avg_speed_ratio": 0.9658357911774108,
+          "jerk_score": 0.8823667770386343,
+          "brake_severity": 0.0,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 2.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 7,
+      "item": {
+        "log_prob": -451.85955810546875,
+        "nominal_log_prob": -409.49517822265625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.898487253735579,
+          "avg_speed_ratio": 0.8845857817055629,
+          "jerk_score": 10.270045490610345,
+          "brake_severity": 0.0,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.083333333333334
+        }
+      }
+    },
+    {
+      "id": 144,
+      "item": {
+        "log_prob": -415.57647705078125,
+        "nominal_log_prob": -415.57647705078125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 2.3920821077543466,
+          "avg_speed_ratio": 0.8251274412646664,
+          "jerk_score": 47.85588318768986,
+          "brake_severity": 30.40716330294956,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.0833333333333335
+        }
+      }
+    },
+    {
+      "id": 30,
+      "item": {
+        "log_prob": -466.6557312011719,
+        "nominal_log_prob": -416.1878662109375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.200129408616095,
+          "avg_speed_ratio": 0.8522118829690837,
+          "jerk_score": 29.60925321708479,
+          "brake_severity": 18.078041085790886,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 19,
+      "item": {
+        "log_prob": -453.23388671875,
+        "nominal_log_prob": -419.8562927246094,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 3.5083045486422355,
+          "avg_speed_ratio": 0.7504826431233081,
+          "jerk_score": 37.4437255551622,
+          "brake_severity": 6.613256299493453,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.0833333333333335
+        }
+      }
+    },
+    {
+      "id": 76,
+      "item": {
+        "log_prob": -426.9613037109375,
+        "nominal_log_prob": -427.1367492675781,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.154072598567378,
+          "avg_speed_ratio": 0.9121369964035977,
+          "jerk_score": 8.634547781604894,
+          "brake_severity": 4.876360015369517,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 124,
+      "item": {
+        "log_prob": -436.2745361328125,
+        "nominal_log_prob": -436.2745361328125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 3.645554718081695,
+          "avg_speed_ratio": 0.8567737081826308,
+          "jerk_score": 29.2078740364315,
+          "brake_severity": 18.103518781678787,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 66,
+      "item": {
+        "log_prob": -443.0440673828125,
+        "nominal_log_prob": -443.3625183105469,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.14066912253317,
+          "avg_speed_ratio": 0.9420108710011182,
+          "jerk_score": 4.206469056540649,
+          "brake_severity": 0.37524532818055273,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 2.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 103,
+      "item": {
+        "log_prob": -447.55047607421875,
+        "nominal_log_prob": -447.55224609375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.205512724767446,
+          "avg_speed_ratio": 0.8362435452483034,
+          "jerk_score": 42.27066993332738,
+          "brake_severity": 26.904127464672857,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 104,
+      "item": {
+        "log_prob": -449.49163818359375,
+        "nominal_log_prob": -449.491455078125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.532886525373424,
+          "avg_speed_ratio": 0.8408917154936881,
+          "jerk_score": 38.09690250747509,
+          "brake_severity": 23.97377272893314,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 131,
+      "item": {
+        "log_prob": -454.16864013671875,
+        "nominal_log_prob": -454.16864013671875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.182646467998347,
+          "avg_speed_ratio": 0.8790551660488286,
+          "jerk_score": 20.192027317038438,
+          "brake_severity": 12.39931830448097,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 53,
+      "item": {
+        "log_prob": -454.1130065917969,
+        "nominal_log_prob": -455.2844543457031,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.460233742828807,
+          "avg_speed_ratio": 0.925514139766832,
+          "jerk_score": 7.616715662072304,
+          "brake_severity": 5.880898438626268,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 150,
+      "item": {
+        "log_prob": -458.5560302734375,
+        "nominal_log_prob": -458.5560302734375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 2.546597500937813,
+          "avg_speed_ratio": 0.841574470021939,
+          "jerk_score": 38.03559939063126,
+          "brake_severity": 23.97799743910684,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 38,
+      "item": {
+        "log_prob": -450.40240478515625,
+        "nominal_log_prob": -465.02978515625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.24269120502915,
+          "avg_speed_ratio": 0.83293447609857,
+          "jerk_score": 42.57368668746755,
+          "brake_severity": 26.88289699462071,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 4,
+      "item": {
+        "log_prob": -465.2558898925781,
+        "nominal_log_prob": -465.2558898925781,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 3.088491212841065,
+          "avg_speed_ratio": 0.820011315244098,
+          "jerk_score": 51.14594814919919,
+          "brake_severity": 32.56482244421776,
+          "lane_changes": 0,
+          "on_road_frac": 0.75,
+          "cumulative_reward": 3.0
+        }
+      }
+    },
+    {
+      "id": 11,
+      "item": {
+        "log_prob": -460.9627380371094,
+        "nominal_log_prob": -467.5361633300781,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 3.792356504611507,
+          "avg_speed_ratio": 0.7402759418534084,
+          "jerk_score": 45.393380239847126,
+          "brake_severity": 22.29281494419344,
+          "lane_changes": 1,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.958333333333333
+        }
+      }
+    },
+    {
+      "id": 142,
+      "item": {
+        "log_prob": -467.78033447265625,
+        "nominal_log_prob": -467.78033447265625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.19481750322321,
+          "avg_speed_ratio": 0.8355495125747588,
+          "jerk_score": 42.33298454289777,
+          "brake_severity": 26.899673965124922,
+          "lane_changes": 0,
+          "on_road_frac": 0.75,
+          "cumulative_reward": 3.0
+        }
+      }
+    },
+    {
+      "id": 31,
+      "item": {
+        "log_prob": -431.65899658203125,
+        "nominal_log_prob": -468.0329284667969,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.192824318000082,
+          "avg_speed_ratio": 0.9153987777146083,
+          "jerk_score": 9.739991842842336,
+          "brake_severity": 7.50939806802765,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 63,
+      "item": {
+        "log_prob": -471.3646240234375,
+        "nominal_log_prob": -471.9354248046875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.213360506864851,
+          "avg_speed_ratio": 0.8501210263180188,
+          "jerk_score": 33.51882903942367,
+          "brake_severity": 21.046245291836147,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.1666666666666665
+        }
+      }
+    },
+    {
+      "id": 135,
+      "item": {
+        "log_prob": -472.1282653808594,
+        "nominal_log_prob": -472.12835693359375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.00387578306644,
+          "avg_speed_ratio": 0.9002418461683943,
+          "jerk_score": 16.130491135398657,
+          "brake_severity": 12.714999586431201,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 49,
+      "item": {
+        "log_prob": -470.94036865234375,
+        "nominal_log_prob": -473.0236511230469,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.617284353329412,
+          "avg_speed_ratio": 0.839796935478313,
+          "jerk_score": 38.19652976494831,
+          "brake_severity": 23.966999287478544,
+          "lane_changes": 0,
+          "on_road_frac": 0.75,
+          "cumulative_reward": 3.0
+        }
+      }
+    },
+    {
+      "id": 25,
+      "item": {
+        "log_prob": -268.0904235839844,
+        "nominal_log_prob": -482.03759765625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.995469332938625,
+          "avg_speed_ratio": 0.8236230405481146,
+          "jerk_score": 21.337037906664094,
+          "brake_severity": 0.0,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.0833333333333335
+        }
+      }
+    },
+    {
+      "id": 113,
+      "item": {
+        "log_prob": -488.7299499511719,
+        "nominal_log_prob": -488.7298889160156,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 3.0536944336119314,
+          "avg_speed_ratio": 0.9048450782229015,
+          "jerk_score": 13.963644016696543,
+          "brake_severity": 10.952115991337196,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 26,
+      "item": {
+        "log_prob": -296.97320556640625,
+        "nominal_log_prob": -493.8616943359375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.317950589957896,
+          "avg_speed_ratio": 0.7093168326243837,
+          "jerk_score": 56.587827204781306,
+          "brake_severity": 17.2890578514431,
+          "lane_changes": 1,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.041666666666667
+        }
+      }
+    },
+    {
+      "id": 39,
+      "item": {
+        "log_prob": -508.64324951171875,
+        "nominal_log_prob": -504.0550537109375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.440241255999908,
+          "avg_speed_ratio": 0.923924831155766,
+          "jerk_score": 7.663943243046206,
+          "brake_severity": 5.880718033719843,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 145,
+      "item": {
+        "log_prob": -508.821044921875,
+        "nominal_log_prob": -508.8211669921875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.002622613279053,
+          "avg_speed_ratio": 0.9191381524361052,
+          "jerk_score": 9.627888419941332,
+          "brake_severity": 7.509870596750419,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 108,
+      "item": {
+        "log_prob": -512.176025390625,
+        "nominal_log_prob": -512.1762084960938,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.060784014476552,
+          "avg_speed_ratio": 0.9497839854668253,
+          "jerk_score": 3.187779334183916,
+          "brake_severity": 2.4813086112270004,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 137,
+      "item": {
+        "log_prob": -514.1246337890625,
+        "nominal_log_prob": -514.1246337890625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.002729422623915,
+          "avg_speed_ratio": 0.8904972664026167,
+          "jerk_score": 41.582491651329946,
+          "brake_severity": 8.784294791505381,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.083333333333334
+        }
+      }
+    },
+    {
+      "id": 105,
+      "item": {
+        "log_prob": -514.3802490234375,
+        "nominal_log_prob": -514.3805541992188,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.01047988311542,
+          "avg_speed_ratio": 0.9779178190977971,
+          "jerk_score": 0.34818364709460287,
+          "brake_severity": 0.0,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 4.166666666666667
+        }
+      }
+    },
+    {
+      "id": 100,
+      "item": {
+        "log_prob": -514.6267700195312,
+        "nominal_log_prob": -514.627197265625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.269809074422033,
+          "avg_speed_ratio": 0.9089669113741456,
+          "jerk_score": 14.674719920629292,
+          "brake_severity": 12.067518250171977,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 119,
+      "item": {
+        "log_prob": -525.8184814453125,
+        "nominal_log_prob": -525.8184814453125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.767774582448328,
+          "avg_speed_ratio": 0.9197901077650945,
+          "jerk_score": 9.610550444379953,
+          "brake_severity": 7.509952983067086,
+          "lane_changes": 0,
+          "on_road_frac": 0.8333333333333334,
+          "cumulative_reward": 5.0
+        }
+      }
+    },
+    {
+      "id": 143,
+      "item": {
+        "log_prob": -525.8887329101562,
+        "nominal_log_prob": -525.8887329101562,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 6.001304151559373,
+          "avg_speed_ratio": 0.9346164662649971,
+          "jerk_score": 5.675026240167539,
+          "brake_severity": 4.356515797470596,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 51,
+      "item": {
+        "log_prob": -529.2311401367188,
+        "nominal_log_prob": -527.349853515625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 2.9758532981155597,
+          "avg_speed_ratio": 0.9046235477372219,
+          "jerk_score": 13.970080007358428,
+          "brake_severity": 10.95208328227653,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 70,
+      "item": {
+        "log_prob": -527.5748291015625,
+        "nominal_log_prob": -528.024169921875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.1975472152996325,
+          "avg_speed_ratio": 0.8668716166648259,
+          "jerk_score": 27.521826705030154,
+          "brake_severity": 20.26773358055141,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 4.166666666666667
+        }
+      }
+    },
+    {
+      "id": 37,
+      "item": {
+        "log_prob": -565.5916748046875,
+        "nominal_log_prob": -529.62255859375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 3.042808419897543,
+          "avg_speed_ratio": 0.9031274057741263,
+          "jerk_score": 14.015527625460413,
+          "brake_severity": 10.951862377624174,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 52,
+      "item": {
+        "log_prob": -528.618896484375,
+        "nominal_log_prob": -534.4406127929688,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.183129393169739,
+          "avg_speed_ratio": 0.8682433130255738,
+          "jerk_score": 27.471678993578465,
+          "brake_severity": 20.26914979290105,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 4.166666666666667
+        }
+      }
+    },
+    {
+      "id": 44,
+      "item": {
+        "log_prob": -523.3231201171875,
+        "nominal_log_prob": -536.13623046875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 3.089918729603269,
+          "avg_speed_ratio": 0.8895738036972188,
+          "jerk_score": 20.522074062234402,
+          "brake_severity": 16.228328431333672,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 16,
+      "item": {
+        "log_prob": -278.3093566894531,
+        "nominal_log_prob": -537.2838745117188,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 2.8959659596288345,
+          "avg_speed_ratio": 0.7631742763305713,
+          "jerk_score": 33.07761215232972,
+          "brake_severity": 4.421196245952813,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 3.0833333333333335
+        }
+      }
+    },
+    {
+      "id": 101,
+      "item": {
+        "log_prob": -542.1248168945312,
+        "nominal_log_prob": -542.1250610351562,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.024780249588056,
+          "avg_speed_ratio": 0.9127362374312454,
+          "jerk_score": 10.170527110716511,
+          "brake_severity": 7.340209334966716,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 4.166666666666667
+        }
+      }
+    },
+    {
+      "id": 121,
+      "item": {
+        "log_prob": -542.244873046875,
+        "nominal_log_prob": -542.2448120117188,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 2.560671737140722,
+          "avg_speed_ratio": 0.9118543329448122,
+          "jerk_score": 11.766155795095953,
+          "brake_severity": 9.209514447704482,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 85,
+      "item": {
+        "log_prob": -542.7789306640625,
+        "nominal_log_prob": -542.8012084960938,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.002951842394705,
+          "avg_speed_ratio": 0.9125549484707975,
+          "jerk_score": 11.747021281955291,
+          "brake_severity": 9.209610938512013,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 72,
+      "item": {
+        "log_prob": -543.68017578125,
+        "nominal_log_prob": -543.6902465820312,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.176837025702776,
+          "avg_speed_ratio": 0.9822862331158672,
+          "jerk_score": 0.24192212490898582,
+          "brake_severity": 0.0,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 68,
+      "item": {
+        "log_prob": -543.9510498046875,
+        "nominal_log_prob": -543.945556640625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.21860901694898,
+          "avg_speed_ratio": 0.8945833899528267,
+          "jerk_score": 18.338981982038067,
+          "brake_severity": 14.478769582042128,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 123,
+      "item": {
+        "log_prob": -547.931396484375,
+        "nominal_log_prob": -547.9313354492188,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.200490506673778,
+          "avg_speed_ratio": 0.9131372151207885,
+          "jerk_score": 11.73169484986655,
+          "brake_severity": 9.209691130352791,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 110,
+      "item": {
+        "log_prob": -551.8646850585938,
+        "nominal_log_prob": -551.8651123046875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.225630636097193,
+          "avg_speed_ratio": 0.8639633372750509,
+          "jerk_score": 30.29806697514262,
+          "brake_severity": 22.423960969188048,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 4.166666666666667
+        }
+      }
+    },
+    {
+      "id": 109,
+      "item": {
+        "log_prob": -552.5340576171875,
+        "nominal_log_prob": -552.533935546875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 3.026235592660973,
+          "avg_speed_ratio": 0.9256533004060153,
+          "jerk_score": 7.612765829000088,
+          "brake_severity": 5.880914235099848,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 116,
+      "item": {
+        "log_prob": -552.6795654296875,
+        "nominal_log_prob": -552.6795654296875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.066629434599684,
+          "avg_speed_ratio": 0.9431240244827869,
+          "jerk_score": 4.553612335194565,
+          "brake_severity": 3.631563416857268,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 34,
+      "item": {
+        "log_prob": -583.1705932617188,
+        "nominal_log_prob": -552.8284912109375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.492920914734164,
+          "avg_speed_ratio": 0.9368674732375504,
+          "jerk_score": 4.140135397671122,
+          "brake_severity": 2.975927493683992,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 41,
+      "item": {
+        "log_prob": -523.4266357421875,
+        "nominal_log_prob": -553.9510498046875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.010612550124535,
+          "avg_speed_ratio": 0.9637540229812398,
+          "jerk_score": 0.7758428401543934,
+          "brake_severity": 0.28113460649233385,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 4.166666666666667
+        }
+      }
+    },
+    {
+      "id": 50,
+      "item": {
+        "log_prob": -559.6522216796875,
+        "nominal_log_prob": -559.6076049804688,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.185427300208592,
+          "avg_speed_ratio": 0.9715322521985948,
+          "jerk_score": 0.5192402907801752,
+          "brake_severity": 0.22714325604025953,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 75,
+      "item": {
+        "log_prob": -561.1483154296875,
+        "nominal_log_prob": -561.2224731445312,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.18687229368337,
+          "avg_speed_ratio": 0.9616558973856869,
+          "jerk_score": 1.2871850873413966,
+          "brake_severity": 0.8497859716095479,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 90,
+      "item": {
+        "log_prob": -562.06396484375,
+        "nominal_log_prob": -562.0630493164062,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.094834467468193,
+          "avg_speed_ratio": 0.9518399647948628,
+          "jerk_score": 2.4669170558610376,
+          "brake_severity": 1.7885962402459241,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 32,
+      "item": {
+        "log_prob": -549.867919921875,
+        "nominal_log_prob": -562.0930786132812,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.017614045762381,
+          "avg_speed_ratio": 0.9382127480168011,
+          "jerk_score": 3.472890836914146,
+          "brake_severity": 2.2274513891994943,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 4.166666666666667
+        }
+      }
+    },
+    {
+      "id": 73,
+      "item": {
+        "log_prob": -562.9993896484375,
+        "nominal_log_prob": -563.04638671875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.168797947304183,
+          "avg_speed_ratio": 0.9182326136694291,
+          "jerk_score": 9.653057433637764,
+          "brake_severity": 7.5097561663416625,
+          "lane_changes": 0,
+          "on_road_frac": 0.8333333333333334,
+          "cumulative_reward": 5.0
+        }
+      }
+    },
+    {
+      "id": 82,
+      "item": {
+        "log_prob": -565.5078125,
+        "nominal_log_prob": -565.5065307617188,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 2.9540582246199256,
+          "avg_speed_ratio": 0.894289175424229,
+          "jerk_score": 18.347011524009726,
+          "brake_severity": 14.478721482109453,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 29,
+      "item": {
+        "log_prob": -558.6187744140625,
+        "nominal_log_prob": -566.462646484375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.0118811344202285,
+          "avg_speed_ratio": 0.9610321261283182,
+          "jerk_score": 0.8727735104384241,
+          "brake_severity": 0.28074270301589827,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 4.166666666666667
+        }
+      }
+    },
+    {
+      "id": 93,
+      "item": {
+        "log_prob": -566.5906372070312,
+        "nominal_log_prob": -566.5977783203125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000009136808638,
+          "avg_speed_ratio": 0.9131695167528435,
+          "jerk_score": 31.907989305419584,
+          "brake_severity": 6.589602399019585,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.083333333333334
+        }
+      }
+    },
+    {
+      "id": 80,
+      "item": {
+        "log_prob": -567.20166015625,
+        "nominal_log_prob": -567.2476806640625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.001615861962858,
+          "avg_speed_ratio": 0.9421026069029544,
+          "jerk_score": 3.9733203868792177,
+          "brake_severity": 2.976361917175085,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 40,
+      "item": {
+        "log_prob": -559.4014282226562,
+        "nominal_log_prob": -567.7025146484375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.0025292736238365,
+          "avg_speed_ratio": 0.9183119346746995,
+          "jerk_score": 9.650802220936265,
+          "brake_severity": 7.50976618988106,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 151,
+      "item": {
+        "log_prob": -569.13427734375,
+        "nominal_log_prob": -569.13427734375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.004391758062067,
+          "avg_speed_ratio": 0.8956559542164597,
+          "jerk_score": 18.31084020457138,
+          "brake_severity": 14.478944931873324,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 77,
+      "item": {
+        "log_prob": -570.1661987304688,
+        "nominal_log_prob": -570.2526245117188,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.002451539926874,
+          "avg_speed_ratio": 0.9204479683586757,
+          "jerk_score": 9.593719711977874,
+          "brake_severity": 7.510036116078527,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 118,
+      "item": {
+        "log_prob": -572.110595703125,
+        "nominal_log_prob": -572.110595703125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.190502167004328,
+          "avg_speed_ratio": 0.9191324398584563,
+          "jerk_score": 9.628043235484817,
+          "brake_severity": 7.509869874865176,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 102,
+      "item": {
+        "log_prob": -573.907470703125,
+        "nominal_log_prob": -573.9072265625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.430686378627115,
+          "avg_speed_ratio": 0.9348823234835963,
+          "jerk_score": 5.668039882880112,
+          "brake_severity": 4.356542139147194,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 95,
+      "item": {
+        "log_prob": -575.697509765625,
+        "nominal_log_prob": -575.69775390625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.191968234200331,
+          "avg_speed_ratio": 0.9066786359113874,
+          "jerk_score": 13.913279613342665,
+          "brake_severity": 10.952386718704073,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 114,
+      "item": {
+        "log_prob": -576.5447387695312,
+        "nominal_log_prob": -576.5452880859375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.001340544095743,
+          "avg_speed_ratio": 0.9621226962417054,
+          "jerk_score": 1.2750836211616028,
+          "brake_severity": 0.8498071752491707,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 138,
+      "item": {
+        "log_prob": -577.35546875,
+        "nominal_log_prob": -577.35546875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000390010542291,
+          "avg_speed_ratio": 0.9242043523177627,
+          "jerk_score": 9.408161543220919,
+          "brake_severity": 7.676250447337501,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 5,
+      "item": {
+        "log_prob": -577.4711303710938,
+        "nominal_log_prob": -577.4711303710938,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.1191824800967645,
+          "avg_speed_ratio": 0.8227176781918178,
+          "jerk_score": 16.340126361918696,
+          "brake_severity": 9.700067571024048,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.0
+        }
+      }
+    },
+    {
+      "id": 59,
+      "item": {
+        "log_prob": -579.8414916992188,
+        "nominal_log_prob": -580.037109375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.248722665566249,
+          "avg_speed_ratio": 0.9139263688645742,
+          "jerk_score": 12.906014761595262,
+          "brake_severity": 10.59762016877834,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 149,
+      "item": {
+        "log_prob": -580.875244140625,
+        "nominal_log_prob": -580.875244140625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 2.577003124990993,
+          "avg_speed_ratio": 0.9189892725494136,
+          "jerk_score": 9.631939619111497,
+          "brake_severity": 7.509851783154417,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 115,
+      "item": {
+        "log_prob": -581.5496826171875,
+        "nominal_log_prob": -581.5496826171875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 2.729329570962342,
+          "avg_speed_ratio": 0.9261272970225091,
+          "jerk_score": 7.5995363187833505,
+          "brake_severity": 5.880968039805165,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 99,
+      "item": {
+        "log_prob": -581.8756713867188,
+        "nominal_log_prob": -581.8770141601562,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.287856572431317,
+          "avg_speed_ratio": 0.9041476584646004,
+          "jerk_score": 16.43382130748551,
+          "brake_severity": 13.525515743646928,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 146,
+      "item": {
+        "log_prob": -584.0130615234375,
+        "nominal_log_prob": -584.0130615234375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.192867482069608,
+          "avg_speed_ratio": 0.9260451543299837,
+          "jerk_score": 7.601804152354821,
+          "brake_severity": 5.8809587155366625,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 128,
+      "item": {
+        "log_prob": -584.8171997070312,
+        "nominal_log_prob": -584.817138671875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.292608399636412,
+          "avg_speed_ratio": 0.9039955115497044,
+          "jerk_score": 16.437810057463604,
+          "brake_severity": 13.525511458331954,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 88,
+      "item": {
+        "log_prob": -588.85546875,
+        "nominal_log_prob": -588.868896484375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.997829993303659,
+          "avg_speed_ratio": 0.9349174109557826,
+          "jerk_score": 5.667125973735869,
+          "brake_severity": 4.356545615691607,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 36,
+      "item": {
+        "log_prob": -553.4920654296875,
+        "nominal_log_prob": -591.5752563476562,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.013338770049214,
+          "avg_speed_ratio": 0.9496784763827529,
+          "jerk_score": 1.8927930992895128,
+          "brake_severity": 1.0564017998211244,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 4.166666666666667
+        }
+      }
+    },
+    {
+      "id": 126,
+      "item": {
+        "log_prob": -591.647705078125,
+        "nominal_log_prob": -591.647705078125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.519995957216786,
+          "avg_speed_ratio": 0.9270419813903775,
+          "jerk_score": 7.57498621402625,
+          "brake_severity": 5.8810718689274655,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 62,
+      "item": {
+        "log_prob": -592.0695190429688,
+        "nominal_log_prob": -592.42724609375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.038961475185482,
+          "avg_speed_ratio": 0.904782477634566,
+          "jerk_score": 16.41759799446758,
+          "brake_severity": 13.525533623741358,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 98,
+      "item": {
+        "log_prob": -594.2401123046875,
+        "nominal_log_prob": -594.2413940429688,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000023564904688,
+          "avg_speed_ratio": 0.9705775013642125,
+          "jerk_score": 0.870798117987412,
+          "brake_severity": 0.607520389620287,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 7.166666666666667
+        }
+      }
+    },
+    {
+      "id": 18,
+      "item": {
+        "log_prob": -870.4736328125,
+        "nominal_log_prob": -594.6875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 2.780122285561708,
+          "avg_speed_ratio": 0.7739168833568599,
+          "jerk_score": 30.458209307009025,
+          "brake_severity": 11.396627213706738,
+          "lane_changes": 1,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 4.041666666666667
+        }
+      }
+    },
+    {
+      "id": 2,
+      "item": {
+        "log_prob": -597.1508178710938,
+        "nominal_log_prob": -597.1507568359375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.131522419350437,
+          "avg_speed_ratio": 0.904321696929882,
+          "jerk_score": 16.429306294794053,
+          "brake_severity": 13.525520645552218,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 148,
+      "item": {
+        "log_prob": -604.6090087890625,
+        "nominal_log_prob": -604.6090087890625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.120272580174851,
+          "avg_speed_ratio": 0.90376018340947,
+          "jerk_score": 48.03433648956397,
+          "brake_severity": 8.785657991675295,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.083333333333334
+        }
+      }
+    },
+    {
+      "id": 127,
+      "item": {
+        "log_prob": -605.1278076171875,
+        "nominal_log_prob": -605.1278076171875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.001092723437678,
+          "avg_speed_ratio": 0.9294479243243633,
+          "jerk_score": 10.474176115185172,
+          "brake_severity": 9.05093670479053,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.166666666666666
+        }
+      }
+    },
+    {
+      "id": 46,
+      "item": {
+        "log_prob": -598.6100463867188,
+        "nominal_log_prob": -605.6736450195312,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.037693076800479,
+          "avg_speed_ratio": 0.9746773983891239,
+          "jerk_score": 0.43746310719013054,
+          "brake_severity": 0.189567255688333,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 152,
+      "item": {
+        "log_prob": -607.23095703125,
+        "nominal_log_prob": -607.23095703125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 6.316478579234179,
+          "avg_speed_ratio": 0.9368579643358951,
+          "jerk_score": 5.619536855566416,
+          "brake_severity": 4.356737892175618,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 132,
+      "item": {
+        "log_prob": -607.3491821289062,
+        "nominal_log_prob": -607.3491821289062,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.801658041475022,
+          "avg_speed_ratio": 0.9438417597048973,
+          "jerk_score": 4.5356579403289965,
+          "brake_severity": 3.6315752338635225,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 139,
+      "item": {
+        "log_prob": -608.1492919921875,
+        "nominal_log_prob": -608.1492919921875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.14351867239765,
+          "avg_speed_ratio": 0.9311487669129368,
+          "jerk_score": 7.681580329521163,
+          "brake_severity": 6.259721415434501,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 23,
+      "item": {
+        "log_prob": -869.0034790039062,
+        "nominal_log_prob": -612.926025390625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.230234633764005,
+          "avg_speed_ratio": 0.7461110364562431,
+          "jerk_score": 42.45670950585149,
+          "brake_severity": 20.143247845538113,
+          "lane_changes": 0,
+          "on_road_frac": 0.8,
+          "cumulative_reward": 3.0833333333333335
+        }
+      }
+    },
+    {
+      "id": 55,
+      "item": {
+        "log_prob": -606.7926025390625,
+        "nominal_log_prob": -613.7686767578125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000393164639302,
+          "avg_speed_ratio": 0.9293045181854993,
+          "jerk_score": 7.72844270804423,
+          "brake_severity": 6.259682690273901,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 58,
+      "item": {
+        "log_prob": -614.9161376953125,
+        "nominal_log_prob": -618.3330078125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000456731432207,
+          "avg_speed_ratio": 0.9190200793158179,
+          "jerk_score": 11.143615655213388,
+          "brake_severity": 9.12862025663962,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 14,
+      "item": {
+        "log_prob": -1037.5010986328125,
+        "nominal_log_prob": -618.7974853515625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.054745442178528,
+          "avg_speed_ratio": 0.8641174933186485,
+          "jerk_score": 13.338305286036737,
+          "brake_severity": 5.365420501856397,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 7.083333333333334
+        }
+      }
+    },
+    {
+      "id": 129,
+      "item": {
+        "log_prob": -624.9271240234375,
+        "nominal_log_prob": -624.9270629882812,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000683808152935,
+          "avg_speed_ratio": 0.9033852278254627,
+          "jerk_score": 18.077962546822754,
+          "brake_severity": 14.961422619429714,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 78,
+      "item": {
+        "log_prob": -624.9730834960938,
+        "nominal_log_prob": -625.0306396484375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.547272010394546,
+          "avg_speed_ratio": 0.916350463559313,
+          "jerk_score": 13.687276598118105,
+          "brake_severity": 11.59360886640788,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 7.166666666666667
+        }
+      }
+    },
+    {
+      "id": 1,
+      "item": {
+        "log_prob": -625.977294921875,
+        "nominal_log_prob": -625.977294921875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.4705030808505715,
+          "avg_speed_ratio": 0.9204031829061622,
+          "jerk_score": 9.594844337697753,
+          "brake_severity": 7.51003045658292,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 54,
+      "item": {
+        "log_prob": -623.9603271484375,
+        "nominal_log_prob": -627.0291748046875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000022539215678,
+          "avg_speed_ratio": 0.9788057080597443,
+          "jerk_score": 0.3408136096334182,
+          "brake_severity": 0.1625311821498616,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 7.166666666666667
+        }
+      }
+    },
+    {
+      "id": 35,
+      "item": {
+        "log_prob": -665.876220703125,
+        "nominal_log_prob": -636.5619506835938,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.609932576077427,
+          "avg_speed_ratio": 0.9837803101388382,
+          "jerk_score": 0.24038333690828892,
+          "brake_severity": 0.0,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 7.166666666666667
+        }
+      }
+    },
+    {
+      "id": 65,
+      "item": {
+        "log_prob": -637.1536254882812,
+        "nominal_log_prob": -637.4590454101562,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.263100642570117,
+          "avg_speed_ratio": 0.90972648884796,
+          "jerk_score": 14.655856560800462,
+          "brake_severity": 12.06753888431316,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.166666666666667
+        }
+      }
+    },
+    {
+      "id": 20,
+      "item": {
+        "log_prob": -929.5587158203125,
+        "nominal_log_prob": -638.284912109375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.288202631227821,
+          "avg_speed_ratio": 0.8336882665472208,
+          "jerk_score": 16.201226374976457,
+          "brake_severity": 4.346521378984593,
+          "lane_changes": 1,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.0
+        }
+      }
+    },
+    {
+      "id": 130,
+      "item": {
+        "log_prob": -638.95947265625,
+        "nominal_log_prob": -638.95947265625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.002437691728204,
+          "avg_speed_ratio": 0.9710382618950328,
+          "jerk_score": 0.8597802201865911,
+          "brake_severity": 0.6075209719550463,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 7.166666666666667
+        }
+      }
+    },
+    {
+      "id": 122,
+      "item": {
+        "log_prob": -643.6468505859375,
+        "nominal_log_prob": -643.6468505859375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.005228372363826,
+          "avg_speed_ratio": 0.9386627737255115,
+          "jerk_score": 6.425791117397858,
+          "brake_severity": 5.365682535135072,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 7.166666666666667
+        }
+      }
+    },
+    {
+      "id": 33,
+      "item": {
+        "log_prob": -601.1555786132812,
+        "nominal_log_prob": -648.50537109375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.00211188444757,
+          "avg_speed_ratio": 0.9318983119606585,
+          "jerk_score": 5.752708708843062,
+          "brake_severity": 4.3562464817559725,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.166666666666667
+        }
+      }
+    },
+    {
+      "id": 60,
+      "item": {
+        "log_prob": -649.8997192382812,
+        "nominal_log_prob": -651.0707397460938,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.672045631215089,
+          "avg_speed_ratio": 0.9509774237172752,
+          "jerk_score": 3.776013815290914,
+          "brake_severity": 3.112948507669833,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 7.166666666666667
+        }
+      }
+    },
+    {
+      "id": 84,
+      "item": {
+        "log_prob": -651.6021728515625,
+        "nominal_log_prob": -651.5654296875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.00269439086881,
+          "avg_speed_ratio": 0.963610976595493,
+          "jerk_score": 1.6464228023116227,
+          "brake_severity": 1.2783361633744614,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 7.166666666666667
+        }
+      }
+    },
+    {
+      "id": 74,
+      "item": {
+        "log_prob": -654.1082763671875,
+        "nominal_log_prob": -654.1433715820312,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000004874782991,
+          "avg_speed_ratio": 0.9619439844795483,
+          "jerk_score": 2.25272106767668,
+          "brake_severity": 1.861140127763173,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.166666666666666
+        }
+      }
+    },
+    {
+      "id": 12,
+      "item": {
+        "log_prob": -999.7440185546875,
+        "nominal_log_prob": -664.7283935546875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.995442999805166,
+          "avg_speed_ratio": 0.44967857253586335,
+          "jerk_score": 3.3626667557140046,
+          "brake_severity": 2.6493104967816077,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 5.583333333333334
+        }
+      }
+    },
+    {
+      "id": 136,
+      "item": {
+        "log_prob": -666.64208984375,
+        "nominal_log_prob": -666.64208984375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000006386417174,
+          "avg_speed_ratio": 0.9499875303691585,
+          "jerk_score": 4.353302690666868,
+          "brake_severity": 3.6768314327910327,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.166666666666666
+        }
+      }
+    },
+    {
+      "id": 89,
+      "item": {
+        "log_prob": -679.6741943359375,
+        "nominal_log_prob": -679.6680297851562,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000089289934469,
+          "avg_speed_ratio": 0.9517710080467262,
+          "jerk_score": 4.800498505933709,
+          "brake_severity": 4.173344440139919,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 9.166666666666666
+        }
+      }
+    },
+    {
+      "id": 125,
+      "item": {
+        "log_prob": -682.0066528320312,
+        "nominal_log_prob": -682.0065307617188,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.001188583922723,
+          "avg_speed_ratio": 0.9263577001500346,
+          "jerk_score": 11.715471678213293,
+          "brake_severity": 10.144453713786312,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.166666666666666
+        }
+      }
+    },
+    {
+      "id": 21,
+      "item": {
+        "log_prob": -836.344970703125,
+        "nominal_log_prob": -683.15966796875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.880496012340711,
+          "avg_speed_ratio": 0.682638212808664,
+          "jerk_score": 50.945914411998466,
+          "brake_severity": 8.090238439526455,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.833333333333334
+        }
+      }
+    },
+    {
+      "id": 92,
+      "item": {
+        "log_prob": -684.8880004882812,
+        "nominal_log_prob": -684.8896484375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000012761691414,
+          "avg_speed_ratio": 0.9262700783171671,
+          "jerk_score": 11.717404838127901,
+          "brake_severity": 10.144453644288047,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.166666666666666
+        }
+      }
+    },
+    {
+      "id": 111,
+      "item": {
+        "log_prob": -686.8290405273438,
+        "nominal_log_prob": -686.8294067382812,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.144259026574227,
+          "avg_speed_ratio": 0.9327661933325402,
+          "jerk_score": 9.223426358801024,
+          "brake_severity": 7.948496059629175,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.166666666666666
+        }
+      }
+    },
+    {
+      "id": 117,
+      "item": {
+        "log_prob": -686.907470703125,
+        "nominal_log_prob": -686.907470703125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.10748746670915,
+          "avg_speed_ratio": 0.9334172760528295,
+          "jerk_score": 9.208538549018764,
+          "brake_severity": 7.948496535561836,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.166666666666666
+        }
+      }
+    },
+    {
+      "id": 141,
+      "item": {
+        "log_prob": -694.4329223632812,
+        "nominal_log_prob": -694.4329833984375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.213244808897907,
+          "avg_speed_ratio": 0.9792691255829408,
+          "jerk_score": 0.33011640272271386,
+          "brake_severity": 0.16253148843962234,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 7.166666666666667
+        }
+      }
+    },
+    {
+      "id": 87,
+      "item": {
+        "log_prob": -696.061279296875,
+        "nominal_log_prob": -696.0709838867188,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000010977666052,
+          "avg_speed_ratio": 0.9300391408642403,
+          "jerk_score": 10.461087687265287,
+          "brake_severity": 9.050937157065247,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.166666666666666
+        }
+      }
+    },
+    {
+      "id": 10,
+      "item": {
+        "log_prob": -1031.4798583984375,
+        "nominal_log_prob": -699.61767578125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 3.5239649663184824,
+          "avg_speed_ratio": 0.8150350472437518,
+          "jerk_score": 26.432368019187834,
+          "brake_severity": 14.958863476843327,
+          "lane_changes": 0,
+          "on_road_frac": 0.8571428571428571,
+          "cumulative_reward": 5.916666666666667
+        }
+      }
+    },
+    {
+      "id": 107,
+      "item": {
+        "log_prob": -703.1514892578125,
+        "nominal_log_prob": -703.1513671875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.0011118131902155,
+          "avg_speed_ratio": 0.9288913612206033,
+          "jerk_score": 10.487130593486972,
+          "brake_severity": 9.050936279025354,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.166666666666666
+        }
+      }
+    },
+    {
+      "id": 147,
+      "item": {
+        "log_prob": -703.9791870117188,
+        "nominal_log_prob": -703.9791259765625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000000435409616,
+          "avg_speed_ratio": 0.9766917423057686,
+          "jerk_score": 0.6478444240119543,
+          "brake_severity": 0.47252856987671404,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 9.166666666666666
+        }
+      }
+    },
+    {
+      "id": 67,
+      "item": {
+        "log_prob": -707.8836669921875,
+        "nominal_log_prob": -708.0682373046875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000000399748647,
+          "avg_speed_ratio": 0.9888946146186297,
+          "jerk_score": 0.13205875930577718,
+          "brake_severity": 0.0,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 9.166666666666666
+        }
+      }
+    },
+    {
+      "id": 13,
+      "item": {
+        "log_prob": -502.5190734863281,
+        "nominal_log_prob": -709.9570922851562,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.34153514354912,
+          "avg_speed_ratio": 0.8292846397681306,
+          "jerk_score": 21.0492225758484,
+          "brake_severity": 10.595423169414396,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.083333333333334
+        }
+      }
+    },
+    {
+      "id": 112,
+      "item": {
+        "log_prob": -710.0111083984375,
+        "nominal_log_prob": -710.0111083984375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000046991715714,
+          "avg_speed_ratio": 0.976876825219424,
+          "jerk_score": 0.6437511848433715,
+          "brake_severity": 0.4725285765181082,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 9.166666666666666
+        }
+      }
+    },
+    {
+      "id": 3,
+      "item": {
+        "log_prob": -710.8046875,
+        "nominal_log_prob": -710.8046875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.0000072372115305,
+          "avg_speed_ratio": 0.9256784025329144,
+          "jerk_score": 30.739681409699948,
+          "brake_severity": 5.625175085675208,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.083333333333334
+        }
+      }
+    },
+    {
+      "id": 6,
+      "item": {
+        "log_prob": -1020.3507080078125,
+        "nominal_log_prob": -713.1332397460938,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 3.1854740803730635,
+          "avg_speed_ratio": 0.8106455856970325,
+          "jerk_score": 28.20541733822414,
+          "brake_severity": 16.364219675679173,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 6.083333333333334
+        }
+      }
+    },
+    {
+      "id": 96,
+      "item": {
+        "log_prob": -713.8529052734375,
+        "nominal_log_prob": -713.8510131835938,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000054179931597,
+          "avg_speed_ratio": 0.971860222908999,
+          "jerk_score": 1.2140589158861985,
+          "brake_severity": 0.9942793227239789,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 9.166666666666666
+        }
+      }
+    },
+    {
+      "id": 48,
+      "item": {
+        "log_prob": -714.3563232421875,
+        "nominal_log_prob": -714.3878173828125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000064385342141,
+          "avg_speed_ratio": 0.9608600794476236,
+          "jerk_score": 2.8301833775497016,
+          "brake_severity": 2.4212083037008734,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 9.166666666666666
+        }
+      }
+    },
+    {
+      "id": 61,
+      "item": {
+        "log_prob": -717.9633178710938,
+        "nominal_log_prob": -718.6640625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000000562894247,
+          "avg_speed_ratio": 0.9653994363830571,
+          "jerk_score": 1.9788428184384728,
+          "brake_severity": 1.654349979909686,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 9.166666666666666
+        }
+      }
+    },
+    {
+      "id": 106,
+      "item": {
+        "log_prob": -718.6829833984375,
+        "nominal_log_prob": -718.6829223632812,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.001047447850399,
+          "avg_speed_ratio": 0.9297387042428541,
+          "jerk_score": 10.467652196673995,
+          "brake_severity": 9.050936927234254,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.166666666666666
+        }
+      }
+    },
+    {
+      "id": 79,
+      "item": {
+        "log_prob": -723.3065185546875,
+        "nominal_log_prob": -723.2673950195312,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000016553234556,
+          "avg_speed_ratio": 0.9487557574718474,
+          "jerk_score": 6.183331254050476,
+          "brake_severity": 5.477391311952901,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 10.166666666666666
+        }
+      }
+    },
+    {
+      "id": 28,
+      "item": {
+        "log_prob": -677.3352661132812,
+        "nominal_log_prob": -726.47509765625,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.0001689056546,
+          "avg_speed_ratio": 0.9347281635339302,
+          "jerk_score": 9.207442058654191,
+          "brake_severity": 8.045283302752411,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 9.166666666666666
+        }
+      }
+    },
+    {
+      "id": 42,
+      "item": {
+        "log_prob": -705.0689697265625,
+        "nominal_log_prob": -730.5248413085938,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000004196423832,
+          "avg_speed_ratio": 0.9622419319060229,
+          "jerk_score": 2.246157500762345,
+          "brake_severity": 1.861140243469189,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.166666666666666
+        }
+      }
+    },
+    {
+      "id": 45,
+      "item": {
+        "log_prob": -729.9331665039062,
+        "nominal_log_prob": -736.5414428710938,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000002719514229,
+          "avg_speed_ratio": 0.8835897726647779,
+          "jerk_score": 37.14434320290082,
+          "brake_severity": 13.85839868042361,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 9.083333333333334
+        }
+      }
+    },
+    {
+      "id": 81,
+      "item": {
+        "log_prob": -737.341064453125,
+        "nominal_log_prob": -737.3184814453125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000000090547499,
+          "avg_speed_ratio": 0.9388486947663186,
+          "jerk_score": 23.86644949032424,
+          "brake_severity": 4.510999186320997,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 10.083333333333334
+        }
+      }
+    },
+    {
+      "id": 86,
+      "item": {
+        "log_prob": -738.8040771484375,
+        "nominal_log_prob": -738.8096313476562,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000000715537549,
+          "avg_speed_ratio": 0.9570532000348724,
+          "jerk_score": 3.764536932539908,
+          "brake_severity": 3.2682996262328503,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 9.166666666666666
+        }
+      }
+    },
+    {
+      "id": 17,
+      "item": {
+        "log_prob": -849.7291259765625,
+        "nominal_log_prob": -740.2724609375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 3.814558147159687,
+          "avg_speed_ratio": 0.9121807524735603,
+          "jerk_score": 7.046909452977839,
+          "brake_severity": 0.0,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 7.083333333333334
+        }
+      }
+    },
+    {
+      "id": 22,
+      "item": {
+        "log_prob": -850.5852661132812,
+        "nominal_log_prob": -745.4882202148438,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.901430847896377,
+          "avg_speed_ratio": 0.9220576831516103,
+          "jerk_score": 6.021762490148261,
+          "brake_severity": 0.0,
+          "lane_changes": 1,
+          "on_road_frac": 0.8888888888888888,
+          "cumulative_reward": 6.958333333333333
+        }
+      }
+    },
+    {
+      "id": 56,
+      "item": {
+        "log_prob": -754.1607055664062,
+        "nominal_log_prob": -753.2865600585938,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000020988764181,
+          "avg_speed_ratio": 0.868922332737214,
+          "jerk_score": 44.21253105784823,
+          "brake_severity": 15.341957718569113,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.083333333333334
+        }
+      }
+    },
+    {
+      "id": 43,
+      "item": {
+        "log_prob": -732.5325317382812,
+        "nominal_log_prob": -761.6620483398438,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000044049978058,
+          "avg_speed_ratio": 0.9018813479338088,
+          "jerk_score": 41.59058238530455,
+          "brake_severity": 6.902611280501184,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 7.083333333333334
+        }
+      }
+    },
+    {
+      "id": 71,
+      "item": {
+        "log_prob": -771.1007690429688,
+        "nominal_log_prob": -771.2354736328125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000000767435987,
+          "avg_speed_ratio": 0.960573807558335,
+          "jerk_score": 2.8363801643529887,
+          "brake_severity": 2.4212082812990054,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 9.166666666666666
+        }
+      }
+    },
+    {
+      "id": 24,
+      "item": {
+        "log_prob": -1071.072021484375,
+        "nominal_log_prob": -782.787841796875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000209096795519,
+          "avg_speed_ratio": 0.8697940191218498,
+          "jerk_score": 11.953525347617164,
+          "brake_severity": 4.201823218204983,
+          "lane_changes": 0,
+          "on_road_frac": 0.875,
+          "cumulative_reward": 6.083333333333334
+        }
+      }
+    },
+    {
+      "id": 94,
+      "item": {
+        "log_prob": -784.7889404296875,
+        "nominal_log_prob": -784.789794921875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000761718248598,
+          "avg_speed_ratio": 0.9445932392750495,
+          "jerk_score": 5.529371088395825,
+          "brake_severity": 4.695006013023227,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.166666666666666
+        }
+      }
+    },
+    {
+      "id": 83,
+      "item": {
+        "log_prob": -788.7281494140625,
+        "nominal_log_prob": -788.810546875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000000135619189,
+          "avg_speed_ratio": 0.9518194132587642,
+          "jerk_score": 5.2243077010557935,
+          "brake_severity": 4.605958799262906,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 10.166666666666666
+        }
+      }
+    },
+    {
+      "id": 64,
+      "item": {
+        "log_prob": -797.7308959960938,
+        "nominal_log_prob": -797.9133911132812,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000041114020859,
+          "avg_speed_ratio": 0.9766608251418178,
+          "jerk_score": 0.6485353296788453,
+          "brake_severity": 0.47252856876730387,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 9.166666666666666
+        }
+      }
+    },
+    {
+      "id": 9,
+      "item": {
+        "log_prob": -1147.7501220703125,
+        "nominal_log_prob": -799.7099609375,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000140806372432,
+          "avg_speed_ratio": 0.8801732777184526,
+          "jerk_score": 15.558467520167621,
+          "brake_severity": 9.820320362943368,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 10.083333333333334
+        }
+      }
+    },
+    {
+      "id": 91,
+      "item": {
+        "log_prob": -809.1722412109375,
+        "nominal_log_prob": -809.1657104492188,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.117468355838181,
+          "avg_speed_ratio": 0.899726164065644,
+          "jerk_score": 18.01728892444178,
+          "brake_severity": 4.5202893565733335,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 10.0
+        }
+      }
+    },
+    {
+      "id": 47,
+      "item": {
+        "log_prob": -819.4771728515625,
+        "nominal_log_prob": -809.852294921875,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 5.000061625714199,
+          "avg_speed_ratio": 0.8780279973136517,
+          "jerk_score": 19.689037335982672,
+          "brake_severity": 6.005345255575052,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 10.0
+        }
+      }
+    },
+    {
+      "id": 8,
+      "item": {
+        "log_prob": -826.287353515625,
+        "nominal_log_prob": -825.2416381835938,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.8950025814856,
+          "avg_speed_ratio": 0.8165437683814686,
+          "jerk_score": 9.811864266349977,
+          "brake_severity": 0.472454477190288,
+          "lane_changes": 0,
+          "on_road_frac": 0.9,
+          "cumulative_reward": 7.916666666666667
+        }
+      }
+    },
+    {
+      "id": 27,
+      "item": {
+        "log_prob": -1154.516357421875,
+        "nominal_log_prob": -829.927001953125,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 4.891407410053604,
+          "avg_speed_ratio": 0.8588402116747551,
+          "jerk_score": 9.535882282581609,
+          "brake_severity": 0.142177385591363,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 8.0
+        }
+      }
+    },
+    {
+      "id": 133,
+      "item": {
+        "log_prob": -891.562255859375,
+        "nominal_log_prob": -891.5624389648438,
+        "is_failure": true,
+        "robustness": 0.0,
+        "metrics": {
+          "success": 0.0,
+          "min_distance": 2.294992798339429,
+          "avg_speed_ratio": 0.9600592512078556,
+          "jerk_score": 3.3642015166452857,
+          "brake_severity": 2.941470255385385,
+          "lane_changes": 0,
+          "on_road_frac": 1.0,
+          "cumulative_reward": 10.166666666666666
+        }
+      }
+    }
+  ]
+}
