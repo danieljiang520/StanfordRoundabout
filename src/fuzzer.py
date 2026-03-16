@@ -327,6 +327,7 @@ class ScenarioFuzzer:
         action_override: Optional[Dict[int, int]] = None,
         seed: Optional[int] = None,
         speed_scale: float = 16.0,
+        return_trajectory: bool = False,
     ) -> dict:
         """Re-run a trajectory with fixed observation noise and optional action overrides.
 
@@ -341,9 +342,12 @@ class ScenarioFuzzer:
                 non-overridden steps the policy chooses deterministically.
             seed: Env reset seed for reproducible initial conditions.
             speed_scale: Reference speed for avg_speed_ratio.
+            return_trajectory: If True, include per-step min_distance and ego
+                position in the returned dict (for trajectory visualization).
 
         Returns:
-            Dict with robustness, is_failure, metrics, actions.
+            Dict with robustness, is_failure, metrics, actions, and optionally
+            trajectory (list of dicts with min_distance, x, y per step).
         """
         env = self.env
         model = self.model
@@ -364,6 +368,7 @@ class ScenarioFuzzer:
 
         velocities: List[float] = []
         min_dist = float("inf")
+        trajectory_steps: List[dict] = []  # per-step state when return_trajectory
         lane_changes = 0
         on_road_steps = 0
         total_steps = 0
@@ -398,11 +403,22 @@ class ScenarioFuzzer:
             v = np.sqrt(ego.velocity[0] ** 2 + ego.velocity[1] ** 2)
             velocities.append(v)
 
+            min_d_step = float("inf")
             for vehicle in unwrapped.road.vehicles:
                 if vehicle is not ego:
                     d = np.linalg.norm(ego.position - vehicle.position)
                     if d < min_dist:
                         min_dist = d
+                    if d < min_d_step:
+                        min_d_step = d
+            if min_d_step == float("inf"):
+                min_d_step = 0.0
+            if return_trajectory:
+                trajectory_steps.append({
+                    "min_distance": float(min_d_step),
+                    "x": float(ego.position[0]),
+                    "y": float(ego.position[1]),
+                })
 
             if ego.on_road:
                 on_road_steps += 1
@@ -438,12 +454,15 @@ class ScenarioFuzzer:
 
         env.close()
 
-        return {
+        out = {
             "is_failure": trajectory_metrics["success"] < 1e-2,
             "robustness": compute_robustness(trajectory_metrics, weights=self.robustness_weights),
             "metrics": trajectory_metrics,
             "actions": actions_taken,
         }
+        if return_trajectory:
+            out["trajectory"] = trajectory_steps
+        return out
 
     def _compute_initial_log_prob(self, env, env_params, eps: float):
         """Compute log-prob for initial environment state (vectorized)."""
