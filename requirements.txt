@@ -1,0 +1,17 @@
+gymnasium==1.2.3
+highway-env==1.10.2
+stable_baselines3==2.7.1
+torch==2.10.0
+numpy==2.2.6
+matplotlib==3.10.8
+scipy==1.15.3
+seaborn==0.13.2
+pygame==2.6.1
+moviepy==2.2.1
+opencv-python==4.13.0.92
+pandas==2.3.3
+tensorboard==2.20.0
+tqdm==4.67.3
+python-dotenv==1.2.1
+ipython==8.37.0
+ipykernel==7.2.0
