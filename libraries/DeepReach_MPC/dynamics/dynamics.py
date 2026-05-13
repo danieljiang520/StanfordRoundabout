@@ -1502,12 +1502,11 @@ class LessLinearND(Dynamics):
 
 # Using control limits and vehicle dynamics model from HighwayEnv
 class TwoCar8D(Dynamics):
-    def __init__(self, collisionR: float, set_mode: str):
+    def __init__(self, collisionR: float, wheelbase: float, set_mode: str):
         self.collisionR = collisionR
         self.set_mode = set_mode
 
-        # HighwayEnv Vehicle.LENGTH = 5.0
-        self.L = 5.0
+        self.L = wheelbase
 
         # HighwayEnv ContinuousAction defaults
         self.delta_min = -math.pi / 4

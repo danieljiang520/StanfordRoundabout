@@ -71,7 +71,7 @@ cmd = [  ##Sanity Run
 
     '--num_nl', '512',
     '--collisionR', '1.0',
-    '--wheelbase', '2.7',
+    '--wheelbase', '5',
     '--set_mode', 'avoid',
 
     '--lr', '5e-5',
