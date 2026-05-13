@@ -14,13 +14,16 @@ else:
 
 import sys
 import subprocess
+from pathlib import Path
 
 import datetime
 timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+repo_dir = Path(__file__).resolve().parent
+run_experiment = repo_dir / 'libraries' / 'DeepReach_MPC' / 'run_experiment.py'
 
 # cmd = [
 #     sys.executable,
-#     '../libraries/DeepReach_MPC/run_experiment.py',
+#     str(run_experiment),
 #     '--mode',
 #     'train',
 #     '--experiment_name',
@@ -54,7 +57,7 @@ timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
 cmd = [  ##Sanity Run
     sys.executable,
-    '../libraries/DeepReach_MPC/run_experiment.py',
+    str(run_experiment),
     '--mode', 'train',
     '--experiment_name', timestamp,
     '--dynamics_class', 'TwoCar8D',
@@ -87,4 +90,4 @@ if use_wandb:
         '--wandb_group',
         'two_car_8d'
     ])
-subprocess.run(cmd)
+subprocess.run(cmd, cwd=repo_dir, check=True)
