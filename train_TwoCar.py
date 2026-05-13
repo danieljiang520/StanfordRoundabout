@@ -90,4 +90,17 @@ if use_wandb:
         '--wandb_group',
         'two_car_8d'
     ])
-subprocess.run(cmd, cwd=repo_dir, check=True)
+# subprocess.run(cmd, cwd=repo_dir, check=True)
+result = subprocess.run(
+    cmd,
+    cwd=repo_dir,
+    text=True,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+)
+
+print(result.stdout)
+
+if result.returncode != 0:
+    print(f"run_experiment.py failed with exit code {result.returncode}")
+    raise SystemExit(result.returncode)
