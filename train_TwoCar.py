@@ -18,38 +18,63 @@ import subprocess
 import datetime
 timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
-cmd = [
+# cmd = [
+#     sys.executable,
+#     '../libraries/DeepReach_MPC/run_experiment.py',
+#     '--mode',
+#     'train',
+#     '--experiment_name',
+#     timestamp,
+#     '--dynamics_class',
+#     'TwoCar8D',
+#     '--tMax',
+#     '1',
+#     '--pretrain',
+#     '--pretrain_iters',
+#     '1000',
+#     '--num_epochs',
+#     '104000',
+#     '--counter_end',
+#     '100000',
+#     '--num_nl',
+#     '512',
+#     '--collisionR',   ## Current  collision radius is 5.0. This is probably too large
+#     '5.0',
+#     '--wheelbase',   ## Wheelbase for two-car system
+#     '2.7',
+#     '--set_mode',
+#     'avoid',
+#     '--lr',
+#     '2e-5',
+#     '--num_MPC_batches',
+#     '20',
+#     '--MPC_batch_size',
+#     '5000'
+# ]
+
+cmd = [  ##Sanity Run
     sys.executable,
     '../libraries/DeepReach_MPC/run_experiment.py',
-    '--mode',
-    'train',
-    '--experiment_name',
-    timestamp,
-    '--dynamics_class',
-    'TwoCar8D',
-    '--tMax',
-    '1',
+    '--mode', 'train',
+    '--experiment_name', timestamp,
+    '--dynamics_class', 'TwoCar8D',
+
+    '--tMax', '1',
     '--pretrain',
-    '--pretrain_iters',
-    '1000',
-    '--num_epochs',
-    '104000',
-    '--counter_end',
-    '100000',
-    '--num_nl',
-    '512',
-    '--collisionR',   ## Current  collision radius is 5.0. This is probably too large
-    '5.0',
-    '--wheelbase',   ## Wheelbase for two-car system
-    '2.7',
-    '--set_mode',
-    'avoid',
-    '--lr',
-    '2e-5',
-    '--num_MPC_batches',
-    '20',
-    '--MPC_batch_size',
-    '5000'
+    '--pretrain_iters', '2000',
+
+    '--num_epochs', '30000',
+    '--counter_end', '20000',
+
+    '--num_nl', '512',
+    '--collisionR', '1.0',
+    '--wheelbase', '2.7',
+    '--set_mode', 'avoid',
+
+    '--lr', '5e-5',
+
+    '--num_MPC_batches', '10',
+    '--MPC_batch_size', '2000'
 ]
 
 if use_wandb:
