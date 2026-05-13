@@ -1771,9 +1771,11 @@ class TwoCar8D(Dynamics):
 
     def plot_config(self):
         return {
-            'state_slices': [0, 0, 0, 8, 5, 0, 0, 8],
+            'state_slices': [0, 0, 0, 8, 0, 0, 0, 8],
             'state_labels': ['px1', 'py1', 'psi1', 'v1', 'px2', 'py2', 'psi2', 'v2'],
             'x_axis_idx': 0,
             'y_axis_idx': 1,
-            'z_axis_idx': 4,
+            'z_axis_idx': -1,
+            'x_axis_range': [-10, 10],
+            'y_axis_range': [-10, 10],
         }

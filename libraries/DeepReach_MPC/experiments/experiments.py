@@ -893,8 +893,8 @@ class Experiment(ABC):
             self.model.requires_grad_(True)
 
     def plotSingleFig(self, state_test_range, plot_config, x_resolution, y_resolution, times, delta_level = None):
-        x_min, x_max = state_test_range[plot_config['x_axis_idx']]
-        y_min, y_max = state_test_range[plot_config['y_axis_idx']]
+        x_min, x_max = plot_config.get('x_axis_range', state_test_range[plot_config['x_axis_idx']])
+        y_min, y_max = plot_config.get('y_axis_range', state_test_range[plot_config['y_axis_idx']])
         
         xs = torch.linspace(x_min, x_max, x_resolution)
         ys = torch.linspace(y_min, y_max, y_resolution)
@@ -928,7 +928,8 @@ class Experiment(ABC):
                 'extent': (x_min, x_max, y_min, y_max),
                 'origin': 'lower',
             }
-            ax.imshow(BRT_img, **imshow_kwargs)
+            s1 = ax.imshow(BRT_img, **imshow_kwargs)
+            fig.colorbar(s1)
             lx=self.dataset.dynamics.boundary_fn(coords.cuda()[...,1:]).detach().cpu().numpy().reshape(x_resolution, y_resolution).T
             zero_contour = ax.contour(X, 
                                 Y, 
@@ -956,9 +957,9 @@ class Experiment(ABC):
         return fig
 
     def plotMultipleFigs(self, state_test_range, plot_config, x_resolution, y_resolution, z_resolution, times, delta_level = None):
-        x_min, x_max = state_test_range[plot_config['x_axis_idx']]
-        y_min, y_max = state_test_range[plot_config['y_axis_idx']]
-        z_min, z_max = state_test_range[plot_config['z_axis_idx']]
+        x_min, x_max = plot_config.get('x_axis_range', state_test_range[plot_config['x_axis_idx']])
+        y_min, y_max = plot_config.get('y_axis_range', state_test_range[plot_config['y_axis_idx']])
+        z_min, z_max = plot_config.get('z_axis_range', state_test_range[plot_config['z_axis_idx']])
 
 
         xs = torch.linspace(x_min, x_max, x_resolution)
