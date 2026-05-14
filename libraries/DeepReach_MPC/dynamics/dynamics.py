@@ -1164,6 +1164,8 @@ class LessLinearND(Dynamics):
         self.control_range_ =torch.tensor([[-u_max, u_max] for _ in range(self.N-1)]).cuda()
         self.eps_var=torch.tensor([u_max for _ in range(self.N-1)]).cuda()
         self.control_init= torch.tensor([0.0 for _ in range(self.N-1)]).cuda() 
+        self.disturbance_init = torch.zeros(2).cuda()
+        
 
         super().__init__(
             name='50D system', loss_type='brt_hjivi', set_mode=set_mode,
@@ -1550,6 +1552,9 @@ class TwoCar8D(Dynamics):
         state_mean_ = (self.state_range_[:, 0] + self.state_range_[:, 1]) / 2.0
         state_var_ = (self.state_range_[:, 1] - self.state_range_[:, 0]) / 2.0
 
+        self.disturbance_init = torch.zeros(2).cuda()
+        self.disturbance_eps_var = self.eps_var.clone()
+
         super().__init__(
             name='TwoCar8D',
             loss_type='brt_hjivi',
@@ -1762,7 +1767,7 @@ class TwoCar8D(Dynamics):
     def sample_target_state(self, num_samples):
         raise NotImplementedError
 
-    def optimal_disturbance_range(self, state):
+    def disturbance_range(self, state):
         return [
             [self.delta_min, self.delta_max],
             [self.a_min, self.a_max],

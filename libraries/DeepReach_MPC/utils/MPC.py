@@ -182,7 +182,7 @@ class MPC:
         '''
         if self.incremental_horizon > 0:
             # Rollout with the incremental horizon
-            state_trajs_H, permuted_controls_H = self.rollout_dynamics(
+            state_trajs_H, permuted_controls_H, _ = self.rollout_dynamics(
                 initial_condition_tensor, start_iter=0, rollout_horizon=self.incremental_horizon)
 
             costs = self.dynamics_.cost_fn(state_trajs_H)  # A * N
@@ -253,15 +253,15 @@ class MPC:
                 best_traj = self.rollout_with_policy(
                     initial_condition_tensor, policy, self.horizon)
             for i in range(num_iterative_refinement+1 - self.num_effective_horizon_refinement):
-                state_trajs, permuted_controls = self.rollout_dynamics(
+                state_trajs, permuted_controls, permuted_disturbances = self.rollout_dynamics(
                     initial_condition_tensor, start_iter=0, rollout_horizon=self.horizon)
                 self.all_state_trajs = state_trajs.detach().cpu()*1.0
                 _, best_traj, best_costs = self.update_control_tensor(
-                    state_trajs, permuted_controls)
+                    state_trajs, permuted_controls, permuted_disturbances)
             return self.control_tensors, best_traj
         elif self.style == 'receding':
             # initial_condition_tensor: A*D
-            state_trajs, permuted_controls = self.rollout_dynamics(
+            state_trajs, permuted_controls, permuted_disturbances = self.rollout_dynamics(
                 initial_condition_tensor, start_iter=self.receiding_start, rollout_horizon=self.horizon-self.receiding_start)
 
             current_controls, best_traj, _ = self.update_control_tensor(
@@ -271,101 +271,238 @@ class MPC:
 
     def rollout_with_policy(self, initial_condition_tensor, policy, policy_horizon, policy_start_iter=0):
         '''
-        Rollout traj with policy and update self.control_tensors (nominal control)
-        Inputs: initial_condition_tensor A*D_N (Batch size * State dim)
-                policy: Current DeepReach model
-                policy_horizon: num steps correpond to t_remaining
-                policy_start_iter: step num correpond to H_R
+        Rollout traj with policy and update nominal control/disturbance tensors.
+
+        Inputs:
+            initial_condition_tensor: A*D_N
+            policy: Current DeepReach model
+            policy_horizon: number of rollout steps
+            policy_start_iter: offset into control/disturbance tensors
         '''
         state_trajs = torch.zeros(
-            (self.batch_size, policy_horizon+1, self.dynamics_.state_dim))  # A * H * D
-        # Move to GPU only when needed
+            (self.batch_size, policy_horizon + 1, self.dynamics_.state_dim)
+        )
         state_trajs = state_trajs.to(self.device, non_blocking=True)
-        state_trajs[:, 0, :] = initial_condition_tensor*1.0
-        state_trajs_clamped = state_trajs*1.0
+
+        state_trajs[:, 0, :] = initial_condition_tensor * 1.0
+        state_trajs_clamped = state_trajs * 1.0
+
         traj_times = torch.ones(self.batch_size, 1).to(
-            self.device)*policy_horizon*self.dT
-        # update control from policy_start_iter to policy_start_iter+ policy horizon
+            self.device
+        ) * policy_horizon * self.dT
+
+        has_disturbance = self.dynamics_.disturbance_dim > 0
+
         for k in range(policy_horizon):
+            tensor_idx = k + policy_start_iter
 
             traj_coords = torch.cat(
-                (traj_times, state_trajs_clamped[:, k, :]), dim=-1)
+                (traj_times, state_trajs_clamped[:, k, :]),
+                dim=-1,
+            )
+
             traj_policy_results = policy(
-                {'coords': self.dynamics_.coord_to_input(traj_coords.to(self.device))})
+                {'coords': self.dynamics_.coord_to_input(traj_coords.to(self.device))}
+            )
+
             traj_dvs = self.dynamics_.io_to_dv(
-                traj_policy_results['model_in'], traj_policy_results['model_out'].squeeze(dim=-1)).detach()
+                traj_policy_results['model_in'],
+                traj_policy_results['model_out'].squeeze(dim=-1),
+            ).detach()
 
-            self.control_tensors[:, k+policy_start_iter, :] = self.dynamics_.optimal_control(
-                traj_coords[:, 1:].to(self.device), traj_dvs[..., 1:].to(self.device))
-            self.control_tensors[:, k+policy_start_iter, :] = self.dynamics_.clamp_control(
-                state_trajs[:, k, :], self.control_tensors[:, k+policy_start_iter, :])
-            state_trajs[:, k+1, :] = self.get_next_step_state(
-                state_trajs[:, k, :], self.control_tensors[:, k+policy_start_iter, :])
+            state_k = traj_coords[:, 1:].to(self.device)
+            dvds_k = traj_dvs[..., 1:].to(self.device)
 
-            state_trajs_clamped[:, k+1, :] = torch.clamp(state_trajs[:, k+1, :], torch.tensor(self.dynamics_.state_test_range(
-            )).to(self.device)[..., 0], torch.tensor(self.dynamics_.state_test_range()).to(self.device)[..., 1])
-            traj_times = traj_times-self.dT
+            self.control_tensors[:, tensor_idx, :] = self.dynamics_.optimal_control(
+                state_k,
+                dvds_k,
+            )
+
+            self.control_tensors[:, tensor_idx, :] = self.dynamics_.clamp_control(
+                state_trajs[:, k, :],
+                self.control_tensors[:, tensor_idx, :],
+            )
+
+            if has_disturbance:
+                self.disturbance_tensors[:, tensor_idx, :] = self.dynamics_.optimal_disturbance(
+                    state_k,
+                    dvds_k,
+                )
+
+                self.disturbance_tensors[:, tensor_idx, :] = self.dynamics_.clamp_disturbance(
+                    state_trajs[:, k, :],
+                    self.disturbance_tensors[:, tensor_idx, :],
+                )
+
+                disturbance_k = self.disturbance_tensors[:, tensor_idx, :]
+            else:
+                disturbance_k = None
+
+            state_trajs[:, k + 1, :] = self.get_next_step_state(
+                state_trajs[:, k, :],
+                self.control_tensors[:, tensor_idx, :],
+                disturbance_k,
+            )
+
+            state_trajs_clamped[:, k + 1, :] = torch.clamp(
+                state_trajs[:, k + 1, :],
+                torch.tensor(self.dynamics_.state_test_range()).to(self.device)[..., 0],
+                torch.tensor(self.dynamics_.state_test_range()).to(self.device)[..., 1],
+            )
+
+            traj_times = traj_times - self.dT
+
         return state_trajs
 
-    def update_control_tensor(self, state_trajs, permuted_controls):
+
+    def update_control_tensor(self, state_trajs, permuted_controls, permuted_disturbances=None):
         '''
-        Determine nominal controls (self.control_tensors) using permuted_controls and corresponding state trajs
-        Inputs: 
-                state_trajs: A*N*H*D_N (Batch size * Num perturbation * Horizon * State dim)
-                permuted_controls: A*N*H*D_U (Batch size * Num perturbation * Horizon * Control dim)
+        Determine nominal controls using sampled trajectories.
+
+        Inputs:
+            state_trajs: A*N*H*D_N
+            permuted_controls: A*N*H*D_U
+            permuted_disturbances: A*N*H*D_D or None
+
+        For disturbance systems, N = num_control_samples * num_disturbance_samples.
+        For avoid mode, this selects max_u min_d cost.
         '''
         costs = self.dynamics_.cost_fn(state_trajs)  # A * N
 
         if self.mode == "MPC":
-            # just use the best control
-            if self.dynamics_.set_mode == 'avoid':
-                best_costs, best_idx = costs.max(1)
-            elif self.dynamics_.set_mode in ['reach', 'reach_avoid']:
-                best_costs, best_idx = costs.min(1)
+            if permuted_disturbances is not None:
+                num_control_samples = self.num_control_samples
+                num_disturbance_samples = self.num_disturbance_samples
+
+                costs_game = costs.reshape(
+                    self.batch_size,
+                    num_control_samples,
+                    num_disturbance_samples,
+                )
+
+                if self.dynamics_.set_mode == 'avoid':
+                    # Disturbance chooses the least safe outcome; control chooses
+                    # the safest among those worst-case outcomes.
+                    worst_costs, worst_dist_idx = costs_game.min(dim=2)
+                    best_costs, best_control_idx = worst_costs.max(dim=1)
+                elif self.dynamics_.set_mode in ['reach', 'reach_avoid']:
+                    # For reach-style objectives, lower cost is better for control,
+                    # so the disturbance chooses the largest cost.
+                    worst_costs, worst_dist_idx = costs_game.max(dim=2)
+                    best_costs, best_control_idx = worst_costs.min(dim=1)
+                else:
+                    raise NotImplementedError
+
+                batch_idx = torch.arange(self.batch_size, device=self.device)
+                best_dist_idx = worst_dist_idx[batch_idx, best_control_idx]
+                best_idx = best_control_idx * num_disturbance_samples + best_dist_idx
+
             else:
-                raise NotImplementedError
+                # Original control-only behavior.
+                if self.dynamics_.set_mode == 'avoid':
+                    best_costs, best_idx = costs.max(1)
+                elif self.dynamics_.set_mode in ['reach', 'reach_avoid']:
+                    best_costs, best_idx = costs.min(1)
+                else:
+                    raise NotImplementedError
+
             expanded_idx = best_idx[..., None, None, None].expand(
-                -1, -1, permuted_controls.size(2), permuted_controls.size(3))
+                -1, -1, permuted_controls.size(2), permuted_controls.size(3)
+            )
 
             best_controls = torch.gather(
-                permuted_controls, dim=1, index=expanded_idx).squeeze(1)  # A * H * D_u
+                permuted_controls,
+                dim=1,
+                index=expanded_idx,
+            ).squeeze(1)  # A * H * D_u
+
             if self.style == 'direct':
-                self.control_tensors = best_controls*1.0
+                self.control_tensors = best_controls * 1.0
             elif self.style == 'receding':
-                self.control_tensors[:, self.receiding_start:,
-                                     :] = best_controls*1.0
+                self.control_tensors[:, self.receiding_start:, :] = best_controls * 1.0
             else:
                 raise NotImplementedError
+
+            if permuted_disturbances is not None:
+                expanded_idx_dist = best_idx[..., None, None, None].expand(
+                    -1, -1, permuted_disturbances.size(2), permuted_disturbances.size(3)
+                )
+
+                best_disturbances = torch.gather(
+                    permuted_disturbances,
+                    dim=1,
+                    index=expanded_idx_dist,
+                ).squeeze(1)  # A * H * D_d
+
+                if self.style == 'direct':
+                    self.disturbance_tensors = best_disturbances * 1.0
+                elif self.style == 'receding':
+                    self.disturbance_tensors[:, self.receiding_start:, :] = best_disturbances * 1.0
+                else:
+                    raise NotImplementedError
+
             expanded_idx_traj = best_idx[..., None, None, None].expand(
-                -1, -1, state_trajs.size(2), state_trajs.size(3))
+                -1, -1, state_trajs.size(2), state_trajs.size(3)
+            )
+
             best_traj = torch.gather(
-                state_trajs, dim=1, index=expanded_idx_traj).squeeze(1)
+                state_trajs,
+                dim=1,
+                index=expanded_idx_traj,
+            ).squeeze(1)
+
         elif self.mode == "MPPI":
-            # use weighted average
+            if permuted_disturbances is not None:
+                raise NotImplementedError(
+                    "Two-player disturbance MPPI is not implemented; use mode='MPC'."
+                )
+
+            # Original weighted-average control-only behavior.
             if self.dynamics_.set_mode == 'avoid':
-                exp_terms = torch.exp((1/self.lambda_)*costs)  # A * N
+                exp_terms = torch.exp((1 / self.lambda_) * costs)
             elif self.dynamics_.set_mode in ['reach', 'reach_avoid']:
-                exp_terms = torch.exp((1/self.lambda_)*-costs)  # A * N
+                exp_terms = torch.exp((1 / self.lambda_) * -costs)
             else:
                 raise NotImplementedError
 
-            den = torch.sum(exp_terms, dim=-1)  # A
+            den = torch.sum(exp_terms, dim=-1)
 
-            num = torch.sum(exp_terms[:, :, None, None].repeat(
-                1, 1, self.horizon, self.dynamics_.control_dim) * permuted_controls, dim=1)  # A * H * D_u
+            num = torch.sum(
+                exp_terms[:, :, None, None].repeat(
+                    1, 1, self.horizon, self.dynamics_.control_dim
+                ) * permuted_controls,
+                dim=1,
+            )
 
-            self.control_tensors = num/den[:, None, None]
+            self.control_tensors = num / den[:, None, None]
 
             self.control_tensors = torch.clamp(
-                self.control_tensors, self.dynamics_.control_range_[..., 0], self.dynamics_.control_range_[..., 1])
+                self.control_tensors,
+                self.dynamics_.control_range_[..., 0],
+                self.dynamics_.control_range_[..., 1],
+            )
+
+            best_costs, best_idx = costs.max(1) if self.dynamics_.set_mode == 'avoid' else costs.min(1)
+            expanded_idx_traj = best_idx[..., None, None, None].expand(
+                -1, -1, state_trajs.size(2), state_trajs.size(3)
+            )
+            best_traj = torch.gather(
+                state_trajs,
+                dim=1,
+                index=expanded_idx_traj,
+            ).squeeze(1)
+
         else:
             raise NotImplementedError
-        # update controls
 
-        current_controls = self.control_tensors[:,
-                                                self.receiding_start:self.receiding_start+self.receding_horizon, :]
+        current_controls = self.control_tensors[
+            :,
+            self.receiding_start:self.receiding_start + self.receding_horizon,
+            :
+        ]
 
         return current_controls, best_traj, best_costs
+
 
     def rollout_nominal_trajs(self, initial_state_tensor):
         '''
@@ -384,62 +521,216 @@ class MPC:
 
     def rollout_dynamics(self, initial_state_tensor, start_iter, rollout_horizon, eps_var_factor=1):
         '''
-        Rollout trajs by generating perturbed controls
-        Inputs: 
-                initial_state_tensor A*D_N (Batch size * State dim)
-                start_iter: from which step we start rolling out
-                rollout_horizon: rollout for how many steps
-                eps_var_factor: scaling factor for the sample variance (not being used in the paper but can be tuned if needed)
-        Outputs: 
-                state_trajs: A*N*H*D_N (Batch size * Num perturbation * Horizon * State dim)
-                permuted_controls: A*N*H*D_U (Batch size * Num perturbation * Horizon * Control dim)
+        Rollout trajs by generating perturbed controls and, if present, disturbances.
+
+        Outputs:
+            state_trajs: A*N*H*D_N
+            permuted_controls: A*N*H*D_U
+            permuted_disturbances: A*N*H*D_D or None
         '''
-        # returns the state trajectory list and swith collision
+        has_disturbance = self.dynamics_.disturbance_dim > 0
+
+        if has_disturbance:
+            num_control_samples = int(math.sqrt(self.num_samples))
+            num_disturbance_samples = int(math.sqrt(self.num_samples))
+            total_samples = num_control_samples * num_disturbance_samples
+        else:
+            num_control_samples = self.num_samples
+            num_disturbance_samples = 1
+            total_samples = self.num_samples
+
+        self.num_control_samples = num_control_samples
+        self.num_disturbance_samples = num_disturbance_samples
+
         if self.sample_mode == "gaussian":
             epsilon_tensor = torch.randn(
-                self.batch_size, self.num_samples, rollout_horizon, self.dynamics_.control_dim).to(self.device)*torch.sqrt(self.dynamics_.eps_var)*eps_var_factor  # A * N * H * D_u
+                self.batch_size,
+                num_control_samples,
+                rollout_horizon,
+                self.dynamics_.control_dim,
+                device=self.device,
+            ) * torch.sqrt(self.dynamics_.eps_var).to(self.device) * eps_var_factor
 
-            # always include the nominal trajectory
             epsilon_tensor[:, 0, ...] = 0.0
 
-            permuted_controls = self.control_tensors[:, start_iter:start_iter+rollout_horizon, :].unsqueeze(1).repeat(1,
-                                                                                                                      self.num_samples, 1, 1) + epsilon_tensor * 1.0  # A * N * H * D_u
+            sampled_controls = (
+                self.control_tensors[:, start_iter:start_iter + rollout_horizon, :]
+                .unsqueeze(1)
+                .repeat(1, num_control_samples, 1, 1)
+                + epsilon_tensor
+            )
+
         elif self.sample_mode == "binary":
-            permuted_controls = torch.sign(torch.empty(
-                self.batch_size, self.num_samples, rollout_horizon, self.dynamics_.control_dim).uniform_(-1, 1)).to(self.device)
-            # always include the nominal trajectory
-            permuted_controls[:, 0, ...] = self.control_tensors[:,
-                                                                start_iter:start_iter+rollout_horizon, :]*1.0
+            sampled_controls = torch.sign(torch.empty(
+                self.batch_size,
+                num_control_samples,
+                rollout_horizon,
+                self.dynamics_.control_dim,
+                device=self.device,
+            ).uniform_(-1, 1))
 
-        # clamp control
-        permuted_controls = torch.clamp(permuted_controls, self.dynamics_.control_range_[
-                                        ..., 0], self.dynamics_.control_range_[..., 1])
+            sampled_controls[:, 0, ...] = (
+                self.control_tensors[:, start_iter:start_iter + rollout_horizon, :] * 1.0
+            )
 
-        # rollout trajs
-        state_trajs = torch.zeros((self.batch_size, self.num_samples, rollout_horizon+1,
-                                  self.dynamics_.state_dim)).to(self.device)  # A * N * H * D
+        else:
+            raise NotImplementedError
+
+        sampled_controls = torch.clamp(
+            sampled_controls,
+            self.dynamics_.control_range_[..., 0],
+            self.dynamics_.control_range_[..., 1],
+        )
+
+        if has_disturbance:
+            disturbance_range = self.dynamics_.disturbance_range_
+            disturbance_eps_var = getattr(
+                self.dynamics_,
+                "disturbance_eps_var",
+                self.dynamics_.eps_var,
+            )
+
+            if self.sample_mode == "gaussian":
+                disturbance_epsilon = torch.randn(
+                    self.batch_size,
+                    num_disturbance_samples,
+                    rollout_horizon,
+                    self.dynamics_.disturbance_dim,
+                    device=self.device,
+                ) * torch.sqrt(disturbance_eps_var).to(self.device) * eps_var_factor
+
+                disturbance_epsilon[:, 0, ...] = 0.0
+
+                sampled_disturbances = (
+                    self.disturbance_tensors[:, start_iter:start_iter + rollout_horizon, :]
+                    .unsqueeze(1)
+                    .repeat(1, num_disturbance_samples, 1, 1)
+                    + disturbance_epsilon
+                )
+
+            elif self.sample_mode == "binary":
+                sampled_disturbances = torch.sign(torch.empty(
+                    self.batch_size,
+                    num_disturbance_samples,
+                    rollout_horizon,
+                    self.dynamics_.disturbance_dim,
+                    device=self.device,
+                ).uniform_(-1, 1))
+
+                sampled_disturbances[:, 0, ...] = (
+                    self.disturbance_tensors[:, start_iter:start_iter + rollout_horizon, :] * 1.0
+                )
+
+            sampled_disturbances = torch.clamp(
+                sampled_disturbances,
+                disturbance_range[..., 0],
+                disturbance_range[..., 1],
+            )
+
+            permuted_controls = (
+                sampled_controls[:, :, None, :, :]
+                .repeat(1, 1, num_disturbance_samples, 1, 1)
+                .reshape(
+                    self.batch_size,
+                    total_samples,
+                    rollout_horizon,
+                    self.dynamics_.control_dim,
+                )
+            )
+
+            permuted_disturbances = (
+                sampled_disturbances[:, None, :, :, :]
+                .repeat(1, num_control_samples, 1, 1, 1)
+                .reshape(
+                    self.batch_size,
+                    total_samples,
+                    rollout_horizon,
+                    self.dynamics_.disturbance_dim,
+                )
+            )
+
+        else:
+            permuted_controls = sampled_controls
+            permuted_disturbances = None
+
+        state_trajs = torch.zeros(
+            (
+                self.batch_size,
+                total_samples,
+                rollout_horizon + 1,
+                self.dynamics_.state_dim,
+            ),
+            device=self.device,
+        )
+
         state_trajs[:, :, 0, :] = initial_state_tensor.unsqueeze(
-            1).repeat(1, self.num_samples, 1)  # A * N * D
+            1
+        ).repeat(1, total_samples, 1)
 
         for k in range(rollout_horizon):
             permuted_controls[:, :, k, :] = self.dynamics_.clamp_control(
-                state_trajs[:, :, k, :], permuted_controls[:, :, k, :])
-            state_trajs[:, :, k+1, :] = self.get_next_step_state(
-                state_trajs[:, :, k, :], permuted_controls[:, :, k, :])
+                state_trajs[:, :, k, :],
+                permuted_controls[:, :, k, :],
+            )
 
-        return state_trajs, permuted_controls
+            if permuted_disturbances is not None:
+                permuted_disturbances[:, :, k, :] = self.dynamics_.clamp_disturbance(
+                    state_trajs[:, :, k, :],
+                    permuted_disturbances[:, :, k, :],
+                )
+
+            state_trajs[:, :, k + 1, :] = self.get_next_step_state(
+                state_trajs[:, :, k, :],
+                permuted_controls[:, :, k, :],
+                None if permuted_disturbances is None else permuted_disturbances[:, :, k, :],
+            )
+
+        return state_trajs, permuted_controls, permuted_disturbances
+
+    # def init_control_tensors(self):
+    #     self.receiding_start = 0
+    #     self.control_init = self.dynamics_.control_init.unsqueeze(
+    #         0).repeat(self.batch_size, 1)
+    #     self.control_tensors = self.control_init.unsqueeze(
+    #         1).repeat(1, self.horizon, 1)  # A * H * D_u
 
     def init_control_tensors(self):
         self.receiding_start = 0
+
         self.control_init = self.dynamics_.control_init.unsqueeze(
             0).repeat(self.batch_size, 1)
         self.control_tensors = self.control_init.unsqueeze(
-            1).repeat(1, self.horizon, 1)  # A * H * D_u
+            1).repeat(1, self.horizon, 1)
 
-    def get_next_step_state(self, state, controls):
+        if self.dynamics_.disturbance_dim > 0:
+            if hasattr(self.dynamics_, "disturbance_init"):
+                disturbance_init = self.dynamics_.disturbance_init
+            else:
+                disturbance_init = torch.zeros(
+                    self.dynamics_.disturbance_dim,
+                    device=self.device,
+                )
+
+            self.disturbance_init = disturbance_init.unsqueeze(
+                0).repeat(self.batch_size, 1)
+            self.disturbance_tensors = self.disturbance_init.unsqueeze(
+                1).repeat(1, self.horizon, 1)
+        else:
+            self.disturbance_tensors = None
+
+
+    # def get_next_step_state(self, state, controls):
+    #     current_dsdt = self.dynamics_.dsdt(
+    #         state, controls, None)
+    #     next_states = self.dynamics_.equivalent_wrapped_state(
+    #         state + current_dsdt*self.dT)
+    #     # next_states = torch.clamp(next_states, self.dynamics_.state_range_[..., 0], self.dynamics_.state_range_[..., 1])
+    #     return next_states
+
+    def get_next_step_state(self, state, controls, disturbances=None):
         current_dsdt = self.dynamics_.dsdt(
-            state, controls, None)
+            state, controls, disturbances)
         next_states = self.dynamics_.equivalent_wrapped_state(
             state + current_dsdt*self.dT)
-        # next_states = torch.clamp(next_states, self.dynamics_.state_range_[..., 0], self.dynamics_.state_range_[..., 1])
         return next_states
+
