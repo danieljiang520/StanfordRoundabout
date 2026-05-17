@@ -6,12 +6,13 @@ from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 from torch import nn
 
 import highway_env  # noqa: F401
+import src
 
-
-TRAIN = True
+TRAIN = False
 
 MAX_VEHICLES = 12
 MODEL_DIR = "roundabout_dqn_gnn"
+VIDEO_TRAFFIC_VEHICLES_COUNT = 1
 
 ROUNDABOUT_CONFIG = {
     "observation": {
@@ -136,7 +137,7 @@ class RoundaboutGNNExtractor(BaseFeaturesExtractor):
 
 if __name__ == "__main__":
     # Create the environment
-    env = gym.make("roundabout-v0", render_mode="rgb_array", config=ROUNDABOUT_CONFIG)
+    env = gym.make("roundabout-v0", render_mode=None, config=ROUNDABOUT_CONFIG)
     obs, info = env.reset()
 
     # Create the model
@@ -166,26 +167,42 @@ if __name__ == "__main__":
 
     # Train the model
     if TRAIN:
-        model.learn(total_timesteps=int(2e4))
+        total_timesteps = int(2e5)
+        print(f"Training GNN DQN for {total_timesteps:,} timesteps...")
+        model.learn(total_timesteps=total_timesteps, progress_bar=True)
         model.save(f"{MODEL_DIR}/model")
         del model
+    env.close()
+
+    video_config = {
+        **ROUNDABOUT_CONFIG,
+        "traffic_vehicles_count": VIDEO_TRAFFIC_VEHICLES_COUNT,
+    }
+    video_env = gym.make(
+        "VariableRoundabout-v0", render_mode="rgb_array", config=video_config
+    )
 
     # Run the trained model and record video
-    model = DQN.load(f"{MODEL_DIR}/model", env=env)
-    env = RecordVideo(
-        env, video_folder=f"{MODEL_DIR}/videos", episode_trigger=lambda e: True
+    model = DQN.load(f"{MODEL_DIR}/model", env=video_env)
+    video_env = RecordVideo(
+        video_env, video_folder=f"{MODEL_DIR}/videos", episode_trigger=lambda e: True
     )
-    env.unwrapped.config["simulation_frequency"] = 15  # Higher FPS for rendering
-    env.unwrapped.set_record_video_wrapper(env)
+    video_env.unwrapped.config["simulation_frequency"] = 15  # Higher FPS for rendering
+    video_env.unwrapped.set_record_video_wrapper(video_env)
+    print(
+        "Recording videos with "
+        f"{VIDEO_TRAFFIC_VEHICLES_COUNT} traffic vehicles "
+        f"({MAX_VEHICLES} observed rows max)."
+    )
 
     for videos in range(10):
         done = truncated = False
-        obs, info = env.reset()
+        obs, info = video_env.reset()
         while not (done or truncated):
             # Predict
             action, _states = model.predict(obs, deterministic=True)
             # Get reward
-            obs, reward, done, truncated, info = env.step(action)
+            obs, reward, done, truncated, info = video_env.step(action)
             # Render
-            env.render()
-    env.close()
+            video_env.render()
+    video_env.close()

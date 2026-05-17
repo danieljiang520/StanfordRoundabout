@@ -38,6 +38,7 @@ from .distributions import (
 )
 from .vehicle import CustomPoliteVehicle
 from .simulated_env import SimulatedEnv
+from .variable_roundabout_env import VariableRoundaboutEnv
 from .fuzzer import ScenarioFuzzer, FuzzerConfig, PARAM_NAMES
 from .robustness import compute_robustness, trajectory_metrics_from_rollout, weights_from_vector
 from .failure_probability import (
@@ -64,6 +65,7 @@ __all__ = [
     "CustomPoliteVehicle",
     # Environment
     "SimulatedEnv",
+    "VariableRoundaboutEnv",
     # Fuzzer
     "ScenarioFuzzer",
     "FuzzerConfig",
