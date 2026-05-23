@@ -217,6 +217,36 @@ def query_slice_multi(
     return min_values, argmin_map
 
 
+def values_at_ego_state(
+    dynamics: TwoCar8D,
+    model: torch.nn.Module,
+    ego_state: np.ndarray,
+    others: np.ndarray,
+) -> np.ndarray:
+    """Evaluate V at the ego's actual state, once per other vehicle.
+
+    Returns a length-K array of V_i(ego_state, other_i). Useful for picking
+    the most-threatening other vehicle (argmin) at the current world state.
+
+    ego_state: (4,) array [px1, py1, psi1, v1].
+    others:    (K, 4) array of [px2, py2, psi2, v2].
+    """
+    K = others.shape[0]
+    ego_t = torch.from_numpy(np.asarray(ego_state, dtype=np.float32))         # (4,)
+    others_t = torch.from_numpy(np.asarray(others, dtype=np.float32))         # (K, 4)
+    ego_block = ego_t.unsqueeze(0).expand(K, 4)                               # (K, 4)
+    state = torch.cat([ego_block, others_t], dim=-1)                          # (K, 8)
+    t = torch.full((K, 1), T_QUERY, dtype=torch.float32)
+    coords = torch.cat([t, state], dim=-1)
+    model_input = dynamics.coord_to_input(coords)
+    with torch.no_grad():
+        results = model({"coords": model_input})
+    values = dynamics.io_to_value(
+        results["model_in"].detach(), results["model_out"].detach().squeeze(dim=-1)
+    )
+    return values.cpu().numpy()
+
+
 def nearest_grid_cell(px_axis: np.ndarray, py_axis: np.ndarray, x: float, y: float) -> tuple[int, int]:
     ix = int(np.clip(np.searchsorted(px_axis, x), 0, len(px_axis) - 1))
     iy = int(np.clip(np.searchsorted(py_axis, y), 0, len(py_axis) - 1))
