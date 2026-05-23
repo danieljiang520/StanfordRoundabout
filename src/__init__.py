@@ -46,6 +46,7 @@ from .failure_probability import (
     importance_sampling_estimate,
     print_failure_probability_report,
 )
+from .rollout_states import VehicleState, extract_vehicle_states, rollout_with_states
 
 __all__ = [
     # Scenario params
@@ -78,4 +79,8 @@ __all__ = [
     "estimate_failure_probability",
     "importance_sampling_estimate",
     "print_failure_probability_report",
+    # Rollout state extraction
+    "VehicleState",
+    "extract_vehicle_states",
+    "rollout_with_states",
 ]
