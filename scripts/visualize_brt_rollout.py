@@ -33,7 +33,10 @@ from libraries.DeepReach_MPC.utils import modules  # noqa: E402
 
 CKPT_PATH = REPO_ROOT / "vf_30k_epoch.ckpt"
 MODEL_PATH = REPO_ROOT / "roundabout_dqn_gnn" / "model"
-OUTPUT_PATH = REPO_ROOT / "roundabout_dqn_gnn" / "videos" / "brt_overlay.gif"
+VIDEOS_DIR = REPO_ROOT / "roundabout_dqn_gnn" / "videos"
+BRT_OUTPUT_PATH = VIDEOS_DIR / "brt_overlay.gif"
+ROLLOUT_OUTPUT_PATH = VIDEOS_DIR / "rollout.gif"
+SIDEBYSIDE_OUTPUT_PATH = VIDEOS_DIR / "rollout_and_brt.gif"
 
 # TwoCar8D params from train_TwoCar.py (the run that produced vf_30k_epoch.ckpt).
 COLLISION_R = 1.0
@@ -165,23 +168,29 @@ def main():
     dynamics = _build_cpu_dynamics()
     vf_model = _load_value_network(dynamics)
 
-    print(f"Rolling out DQN-GNN policy with {TRAFFIC_VEHICLES} traffic vehicle(s)...")
-    env = gym.make("VariableRoundabout-v0", render_mode=None, config=ROUNDABOUT_CONFIG)
-    policy = DQN.load(str(MODEL_PATH), env=env)
-
-    # Many seeds produce an immediate-crash rollout (2 frames). Try several
-    # seeds and keep the longest one so the GIF actually shows BRT evolution.
-    best_rollout = None
+    print(f"Selecting rollout seed across {len(SEED_CANDIDATES)} candidates...")
+    selection_env = gym.make("VariableRoundabout-v0", render_mode=None, config=ROUNDABOUT_CONFIG)
+    policy = DQN.load(str(MODEL_PATH), env=selection_env)
+    best_seed = None
+    best_n = -1
     for seed in SEED_CANDIDATES:
-        candidate = src.rollout_with_states(env, policy, deterministic=True, seed=seed)
+        candidate = src.rollout_with_states(selection_env, policy, deterministic=True, seed=seed)
         n = len(candidate["states"])
-        print(f"  seed={seed}: {n} frames, crashed={candidate['crashed']}")
-        if best_rollout is None or n > len(best_rollout["states"]):
-            best_rollout = candidate
-    rollout = best_rollout
-    env.close()
+        if n > best_n:
+            best_n = n
+            best_seed = seed
+    selection_env.close()
+    print(f"  picked seed={best_seed} with {best_n} frames")
+
+    print(f"Re-running seed {best_seed} with rendering to capture rollout frames...")
+    render_env = gym.make("VariableRoundabout-v0", render_mode="rgb_array", config=ROUNDABOUT_CONFIG)
+    rollout = src.rollout_with_states(
+        render_env, policy, deterministic=True, seed=best_seed, capture_frames=True
+    )
+    render_env.close()
     n_frames = len(rollout["states"])
-    print(f"  picked rollout: {n_frames} frames, crashed={rollout['crashed']}")
+    rollout_frames = rollout["frames"]
+    print(f"  captured {n_frames} states, {len(rollout_frames)} rendered frames, crashed={rollout['crashed']}")
     if n_frames < 2:
         print("  WARNING: rollout terminated immediately; the GIF will be very short.")
 
@@ -215,22 +224,44 @@ def main():
     print(f"  raw value magnitude range: ±{raw_vbar:.2f}; clipping colormap to ±{VALUE_CMAP_LIMIT}")
     vbar = VALUE_CMAP_LIMIT
 
-    fig, ax = plt.subplots(figsize=(6, 6))
+    VIDEOS_DIR.mkdir(parents=True, exist_ok=True)
+
+    _save_brt_gif(
+        BRT_OUTPUT_PATH, px_axis, py_axis, frames_values, ego_xy, other_xy, vbar, n_frames
+    )
+    _save_rollout_gif(ROLLOUT_OUTPUT_PATH, rollout_frames)
+    _save_sidebyside_gif(
+        SIDEBYSIDE_OUTPUT_PATH,
+        rollout_frames,
+        px_axis,
+        py_axis,
+        frames_values,
+        ego_xy,
+        other_xy,
+        vbar,
+        n_frames,
+    )
+    print("Done.")
+
+
+def _decorate_brt_axes(ax) -> None:
+    """Set up BRT axes with inverted y (negative on top, positive on bottom)."""
     ax.set_xlabel("x (m)")
     ax.set_ylabel("y (m)")
     ax.set_aspect("equal")
     ax.set_xlim(-GRID_EXTENT, GRID_EXTENT)
-    ax.set_ylim(-GRID_EXTENT, GRID_EXTENT)
+    ax.set_ylim(GRID_EXTENT, -GRID_EXTENT)  # inverted: negative y at top
+
+
+def _save_brt_gif(path, px_axis, py_axis, frames_values, ego_xy, other_xy, vbar, n_frames):
+    print(f"Saving BRT GIF to {path}...")
+    fig, ax = plt.subplots(figsize=(6, 6))
+    _decorate_brt_axes(ax)
     title = ax.set_title("BRT slice — frame 0")
 
     mesh = ax.pcolormesh(
-        px_axis,
-        py_axis,
-        frames_values[0].T,
-        cmap="RdBu",
-        vmin=-vbar,
-        vmax=+vbar,
-        shading="auto",
+        px_axis, py_axis, frames_values[0].T,
+        cmap="RdBu", vmin=-vbar, vmax=+vbar, shading="auto",
     )
     plt.colorbar(mesh, ax=ax, label="V(x, t=1)")
 
@@ -249,16 +280,72 @@ def main():
         return mesh, ego_dot, other_dot
 
     anim = FuncAnimation(fig=fig, func=update, frames=np.arange(n_frames), interval=200)
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    print(f"Saving GIF to {OUTPUT_PATH}...")
     with tqdm(total=n_frames) as pbar:
-        anim.save(
-            filename=str(OUTPUT_PATH),
-            writer="pillow",
-            progress_callback=lambda i, n: pbar.update(1),
-        )
+        anim.save(filename=str(path), writer="pillow",
+                  progress_callback=lambda i, n: pbar.update(1))
     plt.close(fig)
-    print("Done.")
+
+
+def _save_rollout_gif(path, rollout_frames):
+    print(f"Saving rollout GIF to {path}...")
+    n = len(rollout_frames)
+    fig, ax = plt.subplots(figsize=(6, 6))
+    ax.set_axis_off()
+    title = ax.set_title("Rollout — frame 0")
+    img = ax.imshow(rollout_frames[0])
+
+    def update(i):
+        title.set_text(f"Rollout — frame {i} / {n - 1}")
+        img.set_data(rollout_frames[i])
+        return (img,)
+
+    anim = FuncAnimation(fig=fig, func=update, frames=np.arange(n), interval=200)
+    with tqdm(total=n) as pbar:
+        anim.save(filename=str(path), writer="pillow",
+                  progress_callback=lambda i, _n: pbar.update(1))
+    plt.close(fig)
+
+
+def _save_sidebyside_gif(
+    path, rollout_frames, px_axis, py_axis, frames_values, ego_xy, other_xy, vbar, n_frames
+):
+    print(f"Saving side-by-side GIF to {path}...")
+    # Use the smaller of the two stream lengths in case rendering skipped a frame.
+    n = min(len(rollout_frames), n_frames)
+    fig, (ax_left, ax_right) = plt.subplots(1, 2, figsize=(12, 6))
+
+    ax_left.set_axis_off()
+    left_title = ax_left.set_title("Rollout — frame 0")
+    img = ax_left.imshow(rollout_frames[0])
+
+    _decorate_brt_axes(ax_right)
+    right_title = ax_right.set_title("BRT slice — frame 0")
+    mesh = ax_right.pcolormesh(
+        px_axis, py_axis, frames_values[0].T,
+        cmap="RdBu", vmin=-vbar, vmax=+vbar, shading="auto",
+    )
+    plt.colorbar(mesh, ax=ax_right, label="V(x, t=1)")
+    contour_state = {"artist": ax_right.contour(px_axis, py_axis, frames_values[0].T, levels=[0], colors="k")}
+    ego_dot, = ax_right.plot([ego_xy[0][0]], [ego_xy[0][1]], "o", color="lime", markersize=10, markeredgecolor="black", label="ego")
+    other_dot, = ax_right.plot([other_xy[0][0]], [other_xy[0][1]], "o", color="blue", markersize=10, markeredgecolor="black", label="other")
+    ax_right.legend(loc="upper right")
+
+    def update(i):
+        left_title.set_text(f"Rollout — frame {i} / {n - 1}")
+        img.set_data(rollout_frames[i])
+        right_title.set_text(f"BRT slice — frame {i} / {n - 1}")
+        mesh.set_array(frames_values[i].T.ravel())
+        contour_state["artist"].remove()
+        contour_state["artist"] = ax_right.contour(px_axis, py_axis, frames_values[i].T, levels=[0], colors="k")
+        ego_dot.set_data([ego_xy[i][0]], [ego_xy[i][1]])
+        other_dot.set_data([other_xy[i][0]], [other_xy[i][1]])
+        return img, mesh, ego_dot, other_dot
+
+    anim = FuncAnimation(fig=fig, func=update, frames=np.arange(n), interval=200)
+    with tqdm(total=n) as pbar:
+        anim.save(filename=str(path), writer="pillow",
+                  progress_callback=lambda i, _n: pbar.update(1))
+    plt.close(fig)
 
 
 if __name__ == "__main__":

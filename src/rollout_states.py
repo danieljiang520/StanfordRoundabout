@@ -53,17 +53,21 @@ def rollout_with_states(
     deterministic: bool = True,
     max_steps: int | None = None,
     seed: int | None = None,
+    capture_frames: bool = False,
 ) -> dict:
     """Run one episode, recording per-vehicle states at every timestep.
 
     states[i] is the env state right before action actions[i] is applied.
     The list has length T+1 — one extra entry for the post-terminal state.
+    If capture_frames is True, also records env.render() output per timestep
+    under "frames" (requires env to be made with render_mode="rgb_array").
     """
     obs, _info = env.reset(seed=seed) if seed is not None else env.reset()
 
     states = [extract_vehicle_states(env)]
     actions: list[int] = []
     rewards: list[float] = []
+    frames: list[np.ndarray] = [env.render()] if capture_frames else []
 
     terminated = False
     truncated = False
@@ -80,10 +84,12 @@ def rollout_with_states(
         actions.append(int(np.asarray(action).item()))
         rewards.append(float(reward))
         states.append(extract_vehicle_states(env))
+        if capture_frames:
+            frames.append(env.render())
         crashed = bool(info.get("crashed", crashed))
         step_count += 1
 
-    return {
+    result = {
         "states": states,
         "actions": actions,
         "rewards": rewards,
@@ -91,3 +97,6 @@ def rollout_with_states(
         "truncated": truncated,
         "crashed": crashed,
     }
+    if capture_frames:
+        result["frames"] = frames
+    return result
