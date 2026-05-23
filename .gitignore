@@ -86,6 +86,9 @@ wandb/
 roundabout_dqn/videos/
 roundabout_dqn/videos/*.mp4
 roundabout_dqn/videos/*.gif
+roundabout_dqn_gnn/videos/
+roundabout_dqn_gnn/videos/*.mp4
+roundabout_dqn_gnn/videos/*.gif
 
 
 # mypy

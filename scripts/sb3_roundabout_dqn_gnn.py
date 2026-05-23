@@ -12,7 +12,7 @@ TRAIN = False
 
 MAX_VEHICLES = 12
 MODEL_DIR = "roundabout_dqn_gnn"
-VIDEO_TRAFFIC_VEHICLES_COUNT = 1
+VIDEO_TRAFFIC_VEHICLES_COUNT = 3
 
 ROUNDABOUT_CONFIG = {
     "observation": {
