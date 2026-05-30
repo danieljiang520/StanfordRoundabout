@@ -1502,6 +1502,8 @@ class LessLinearND(Dynamics):
 #         }
 
 
+# Previous center-distance TwoCar8D retained as an inactive reference.
+'''
 # Using control limits and vehicle dynamics model from HighwayEnv
 class TwoCar8D(Dynamics):
     def __init__(self, collisionR: float, wheelbase: float, set_mode: str):
@@ -1634,6 +1636,330 @@ class TwoCar8D(Dynamics):
         dx = state[..., 0] - state[..., 4]
         dy = state[..., 1] - state[..., 5]
         return dx ** 2 + dy ** 2 - self.collisionR ** 2
+
+    def cost_fn(self, state_traj):
+        return torch.min(self.boundary_fn(state_traj), dim=-1).values
+
+    def _control_vertices(self, device):
+        return torch.tensor([
+            [self.delta_min, self.a_min],
+            [self.delta_min, self.a_max],
+            [self.delta_max, self.a_min],
+            [self.delta_max, self.a_max],
+        ], device=device)
+
+    def hamiltonian(self, state, dvds):
+        if self.set_mode != 'avoid':
+            raise NotImplementedError
+
+        controls = self._control_vertices(state.device)
+        disturbances = self._control_vertices(state.device)
+
+        control_values = []
+        for u in controls:
+            u_batch = u.expand(*state.shape[:-1], 2)
+
+            disturbance_values = []
+            for d in disturbances:
+                d_batch = d.expand(*state.shape[:-1], 2)
+                dsdt_ = self.dsdt(state, u_batch, d_batch)
+                disturbance_values.append(torch.sum(dvds * dsdt_, dim=-1))
+
+            disturbance_values = torch.stack(disturbance_values, dim=-1)
+            control_values.append(torch.min(disturbance_values, dim=-1).values)
+
+        control_values = torch.stack(control_values, dim=-1)
+        return torch.max(control_values, dim=-1).values
+
+    def optimal_control(self, state, dvds):
+        controls = self._control_vertices(state.device)
+        disturbances = self._control_vertices(state.device)
+
+        control_scores = []
+        for u in controls:
+            u_batch = u.expand(*state.shape[:-1], 2)
+
+            disturbance_scores = []
+            for d in disturbances:
+                d_batch = d.expand(*state.shape[:-1], 2)
+                dsdt_ = self.dsdt(state, u_batch, d_batch)
+                disturbance_scores.append(torch.sum(dvds * dsdt_, dim=-1))
+
+            disturbance_scores = torch.stack(disturbance_scores, dim=-1)
+            control_scores.append(torch.min(disturbance_scores, dim=-1).values)
+
+        control_scores = torch.stack(control_scores, dim=-1)
+        best_idx = torch.argmax(control_scores, dim=-1)
+
+        return self.clamp_control(state, controls[best_idx])
+
+    def optimal_disturbance(self, state, dvds):
+        opt_control = self.optimal_control(state, dvds)
+        disturbances = self._control_vertices(state.device)
+
+        disturbance_scores = []
+        for d in disturbances:
+            d_batch = d.expand(*state.shape[:-1], 2)
+            dsdt_ = self.dsdt(state, opt_control, d_batch)
+            disturbance_scores.append(torch.sum(dvds * dsdt_, dim=-1))
+
+        disturbance_scores = torch.stack(disturbance_scores, dim=-1)
+        best_idx = torch.argmin(disturbance_scores, dim=-1)
+
+        return self.clamp_disturbance(state, disturbances[best_idx])
+
+    def clamp_control(self, state, control):
+        control_clamped = control.clone()
+        v1 = state[..., 3]
+
+        control_clamped[..., 0] = torch.clamp(
+            control_clamped[..., 0],
+            self.delta_min,
+            self.delta_max,
+        )
+        control_clamped[..., 1] = torch.clamp(
+            control_clamped[..., 1],
+            self.a_min,
+            self.a_max,
+        )
+
+        control_clamped[..., 1] = torch.where(
+            v1 <= self.v_min + 1e-3,
+            torch.clamp(control_clamped[..., 1], min=0.0),
+            control_clamped[..., 1],
+        )
+
+        control_clamped[..., 1] = torch.where(
+            v1 >= self.v_max - 1e-3,
+            torch.clamp(control_clamped[..., 1], max=0.0),
+            control_clamped[..., 1],
+        )
+
+        return control_clamped
+
+    def clamp_disturbance(self, state, disturbance):
+        disturbance_clamped = disturbance.clone()
+        v2 = state[..., 7]
+
+        disturbance_clamped[..., 0] = torch.clamp(
+            disturbance_clamped[..., 0],
+            self.delta_min,
+            self.delta_max,
+        )
+        disturbance_clamped[..., 1] = torch.clamp(
+            disturbance_clamped[..., 1],
+            self.a_min,
+            self.a_max,
+        )
+
+        disturbance_clamped[..., 1] = torch.where(
+            v2 <= self.v_min + 1e-3,
+            torch.clamp(disturbance_clamped[..., 1], min=0.0),
+            disturbance_clamped[..., 1],
+        )
+
+        disturbance_clamped[..., 1] = torch.where(
+            v2 >= self.v_max - 1e-3,
+            torch.clamp(disturbance_clamped[..., 1], max=0.0),
+            disturbance_clamped[..., 1],
+        )
+
+        return disturbance_clamped
+
+    def sample_target_state(self, num_samples):
+        raise NotImplementedError
+
+    def disturbance_range(self, state):
+        return [
+            [self.delta_min, self.delta_max],
+            [self.a_min, self.a_max],
+        ]
+
+    def plot_config(self):
+        return {
+            'state_slices': [0, 0, 0, 8, 0, 0, 0, 8],
+            'state_labels': ['px1', 'py1', 'psi1', 'v1', 'px2', 'py2', 'psi2', 'v2'],
+            'x_axis_idx': 0,
+            'y_axis_idx': 1,
+            'z_axis_idx': -1,
+            'x_axis_range': [-10, 10],
+            'y_axis_range': [-10, 10],
+        }
+'''
+
+
+# Using control limits and vehicle dynamics model from HighwayEnv
+class TwoCar8D(Dynamics):
+    def __init__(
+        self,
+        car_length: float,
+        car_width: float,
+        body_margin: float,
+        wheelbase: float,
+        set_mode: str,
+    ):
+        self.car_length = car_length
+        self.car_width = car_width
+        self.body_margin = body_margin
+        self.set_mode = set_mode
+
+        self.L = wheelbase
+
+        # HighwayEnv ContinuousAction defaults
+        self.delta_min = -math.pi / 4
+        self.delta_max = math.pi / 4
+        self.a_min = -5.0
+        self.a_max = 5.0
+
+        # Roundabout target speeds are [0, 8, 16], but the vehicle model itself
+        # allows larger speeds. Use [0, 32] to cover the roundabout traffic setup.
+        self.v_min = 0.0
+        self.v_max = 32.0
+
+        self.state_range_ = torch.tensor([
+            [-100.0, 100.0],        # px1
+            [-100.0, 100.0],        # py1
+            [-math.pi, math.pi],    # psi1
+            [self.v_min, self.v_max],
+            [-100.0, 100.0],        # px2
+            [-100.0, 100.0],        # py2
+            [-math.pi, math.pi],    # psi2
+            [self.v_min, self.v_max],
+        ]).cuda()
+
+        self.control_range_ = torch.tensor([
+            [self.delta_min, self.delta_max],
+            [self.a_min, self.a_max],
+        ]).cuda()
+
+        self.disturbance_range_ = torch.tensor([
+            [self.delta_min, self.delta_max],
+            [self.a_min, self.a_max],
+        ]).cuda()
+
+        self.eps_var = torch.tensor([
+            self.delta_max,
+            self.a_max,
+        ]).cuda()
+
+        self.control_init = torch.zeros(2).cuda()
+
+        state_mean_ = (self.state_range_[:, 0] + self.state_range_[:, 1]) / 2.0
+        state_var_ = (self.state_range_[:, 1] - self.state_range_[:, 0]) / 2.0
+
+        self.disturbance_init = torch.zeros(2).cuda()
+        self.disturbance_eps_var = self.eps_var.clone()
+
+        super().__init__(
+            name='TwoCar8D',
+            loss_type='brt_hjivi',
+            set_mode=set_mode,
+            state_dim=8,
+            input_dim=11,
+            control_dim=2,
+            disturbance_dim=2,
+            state_mean=state_mean_.cpu().tolist(),
+            state_var=state_var_.cpu().tolist(),
+            value_mean=0.0,
+            value_var=200.0,
+            value_normto=0.02,
+            deepReach_model='exact',
+        )
+
+    def control_range(self, state):
+        return [
+            [self.delta_min, self.delta_max],
+            [self.a_min, self.a_max],
+        ]
+
+    def state_test_range(self):
+        return self.state_range_.cpu().tolist()
+
+    def state_verification_range(self):
+        return self.state_range_.cpu().tolist()
+
+    def equivalent_wrapped_state(self, state):
+        wrapped_state = torch.clone(state)
+        wrapped_state[..., 2] = (wrapped_state[..., 2] + math.pi) % (2 * math.pi) - math.pi
+        wrapped_state[..., 6] = (wrapped_state[..., 6] + math.pi) % (2 * math.pi) - math.pi
+        return wrapped_state
+
+    def periodic_transform_fn(self, input):
+        output_shape = list(input.shape)
+        output_shape[-1] = input.shape[-1] + 2
+        transformed_input = torch.zeros(output_shape, device=input.device)
+
+        transformed_input[..., 0:3] = input[..., 0:3]
+        transformed_input[..., 3] = torch.sin(input[..., 3] * self.state_var[2].to(input.device))
+        transformed_input[..., 4] = torch.cos(input[..., 3] * self.state_var[2].to(input.device))
+        transformed_input[..., 5:8] = input[..., 4:7]
+        transformed_input[..., 8] = torch.sin(input[..., 7] * self.state_var[6].to(input.device))
+        transformed_input[..., 9] = torch.cos(input[..., 7] * self.state_var[6].to(input.device))
+        transformed_input[..., 10] = input[..., 8]
+
+        return transformed_input.cuda()
+
+    def dsdt(self, state, control, disturbance):
+        dsdt = torch.zeros_like(state)
+
+        delta1 = control[..., 0]
+        a1 = control[..., 1]
+
+        delta2 = disturbance[..., 0]
+        a2 = disturbance[..., 1]
+
+        beta1 = torch.atan(0.5 * torch.tan(delta1))
+        beta2 = torch.atan(0.5 * torch.tan(delta2))
+
+        # Car 1: ego/control vehicle
+        dsdt[..., 0] = state[..., 3] * torch.cos(state[..., 2] + beta1)
+        dsdt[..., 1] = state[..., 3] * torch.sin(state[..., 2] + beta1)
+        dsdt[..., 2] = state[..., 3] * torch.sin(beta1) / (self.L / 2.0)
+        dsdt[..., 3] = a1
+
+        # Car 2: adversarial/disturbance vehicle
+        dsdt[..., 4] = state[..., 7] * torch.cos(state[..., 6] + beta2)
+        dsdt[..., 5] = state[..., 7] * torch.sin(state[..., 6] + beta2)
+        dsdt[..., 6] = state[..., 7] * torch.sin(beta2) / (self.L / 2.0)
+        dsdt[..., 7] = a2
+
+        return dsdt
+
+    def boundary_fn(self, state):
+        p1 = state[..., 0:2]
+        p2 = state[..., 4:6]
+        psi1 = state[..., 2]
+        psi2 = state[..., 6]
+
+        forward1 = torch.stack([torch.cos(psi1), torch.sin(psi1)], dim=-1)
+        lateral1 = torch.stack([-torch.sin(psi1), torch.cos(psi1)], dim=-1)
+        forward2 = torch.stack([torch.cos(psi2), torch.sin(psi2)], dim=-1)
+        lateral2 = torch.stack([-torch.sin(psi2), torch.cos(psi2)], dim=-1)
+
+        center_delta = p2 - p1
+        half_length = 0.5 * self.car_length + self.body_margin
+        half_width = 0.5 * self.car_width + self.body_margin
+
+        def projection_radius(axis, forward, lateral):
+            forward_projection = torch.abs((forward * axis).sum(dim=-1))
+            lateral_projection = torch.abs((lateral * axis).sum(dim=-1))
+            return half_length * forward_projection + half_width * lateral_projection
+
+        def signed_separation(axis):
+            center_distance = torch.abs((center_delta * axis).sum(dim=-1))
+            radius1 = projection_radius(axis, forward1, lateral1)
+            radius2 = projection_radius(axis, forward2, lateral2)
+            return center_distance - (radius1 + radius2)
+
+        sep_forward1 = signed_separation(forward1)
+        sep_lateral1 = signed_separation(lateral1)
+        sep_forward2 = signed_separation(forward2)
+        sep_lateral2 = signed_separation(lateral2)
+
+        return torch.maximum(
+            torch.maximum(sep_forward1, sep_lateral1),
+            torch.maximum(sep_forward2, sep_lateral2),
+        )
 
     def cost_fn(self, state_traj):
         return torch.min(self.boundary_fn(state_traj), dim=-1).values
