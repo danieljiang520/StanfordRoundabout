@@ -35,8 +35,10 @@
 # MODEL_PATH = REPO_ROOT / "roundabout_dqn_gnn" / "model"
 # VIDEOS_DIR = REPO_ROOT / "roundabout_dqn_gnn" / "videos"
 
-# # TwoCar8D params from train_TwoCar.py (the run that produced vf_30k_epoch.ckpt).
-# COLLISION_R = 1.0
+# # TwoCar8D body-geometry params. Retrain before treating CKPT_PATH as body-geometry BRT.
+# CAR_LENGTH = 5.0
+# CAR_WIDTH = 2.0
+# BODY_MARGIN = 1.0
 # WHEELBASE = 5.0
 # T_QUERY = 1.0
 
@@ -45,9 +47,8 @@
 # GRID_EXTENT = 60.0
 # GRID_RESOLUTION = 100
 
-# # The BRT boundary function (px1-px2)^2 + (py1-py2)^2 - collisionR^2 dominates
-# # the network output and can reach ~10^4 on this grid. Clip the colormap to
-# # keep the near-zero structure visible.
+# # The body-geometry BRT boundary is a signed oriented-rectangle separation in
+# # meters. Clip the colormap to keep the near-zero/contact structure visible.
 # VALUE_CMAP_LIMIT = 50.0
 
 # VIDEO_FPS = 5
@@ -92,7 +93,13 @@
 #     original_cuda = torch.Tensor.cuda
 #     torch.Tensor.cuda = lambda self, *a, **k: self.cpu()  # type: ignore[method-assign]
 #     try:
-#         dynamics = TwoCar8D(collisionR=COLLISION_R, wheelbase=WHEELBASE, set_mode="avoid")
+#         dynamics = TwoCar8D(
+#             car_length=CAR_LENGTH,
+#             car_width=CAR_WIDTH,
+#             body_margin=BODY_MARGIN,
+#             wheelbase=WHEELBASE,
+#             set_mode="avoid",
+#         )
 #     finally:
 #         torch.Tensor.cuda = original_cuda  # type: ignore[method-assign]
 
@@ -409,8 +416,11 @@ CKPT_PATH = REPO_ROOT / "vf_30k_epoch.ckpt"
 MODEL_PATH = REPO_ROOT / "roundabout_dqn_gnn" / "model"
 VIDEOS_DIR = REPO_ROOT / "roundabout_dqn_gnn" / "videos"
 
-# TwoCar8D params from train_TwoCar.py (the run that produced vf_30k_epoch.ckpt).
-COLLISION_R = 1.0
+# TwoCar8D params for body-geometry training/evaluation. Retrain the value
+# function before treating CKPT_PATH as a body-geometry BRT checkpoint.
+CAR_LENGTH = 5.0
+CAR_WIDTH = 2.0
+BODY_MARGIN = 1.0
 WHEELBASE = 5.0
 T_QUERY = 1.0
 
@@ -419,9 +429,8 @@ T_QUERY = 1.0
 GRID_EXTENT = 60.0
 GRID_RESOLUTION = 100
 
-# The BRT boundary function (px1-px2)^2 + (py1-py2)^2 - collisionR^2 dominates
-# the network output and can reach ~10^4 on this grid. Clip the colormap to
-# keep the near-zero structure visible.
+# The body-geometry BRT boundary is a signed oriented-rectangle separation in
+# meters. Clip the colormap to keep the near-zero/contact structure visible.
 VALUE_CMAP_LIMIT = 50.0
 
 VIDEO_FPS = 5
@@ -465,7 +474,13 @@ def build_cpu_dynamics() -> TwoCar8D:
     original_cuda = torch.Tensor.cuda
     torch.Tensor.cuda = lambda self, *a, **k: self.cpu()  # type: ignore[method-assign]
     try:
-        dynamics = TwoCar8D(collisionR=COLLISION_R, wheelbase=WHEELBASE, set_mode="avoid")
+        dynamics = TwoCar8D(
+            car_length=CAR_LENGTH,
+            car_width=CAR_WIDTH,
+            body_margin=BODY_MARGIN,
+            wheelbase=WHEELBASE,
+            set_mode="avoid",
+        )
     finally:
         torch.Tensor.cuda = original_cuda  # type: ignore[method-assign]
 

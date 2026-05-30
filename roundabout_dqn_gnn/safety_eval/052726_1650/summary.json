@@ -1,0 +1,51 @@
+{
+  "experiment": "brt_safety_controller_vs_nominal_dqn",
+  "run_timestamp": "2026-05-27T16:50:50-07:00",
+  "output_dir": "/home/jack/jack/StanfordRoundabout/roundabout_dqn_gnn/safety_eval/052726_1650",
+  "num_rollouts": 10,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "nominal_crashes": 4,
+  "brt_crashes": 0,
+  "nominal_crash_rate": 0.4,
+  "brt_crash_rate": 0.0,
+  "nominal_safety_rate": 0.6,
+  "brt_safety_rate": 1.0,
+  "absolute_safety_rate_improvement": 0.4,
+  "nominal_crash_rate_ci95": [
+    0.16818032970623614,
+    0.6873262302663417
+  ],
+  "brt_crash_rate_ci95": [
+    0.0,
+    0.2775327998628892
+  ],
+  "paired_comparison_counts": {
+    "both_safe": 6,
+    "both_crashed": 0,
+    "nominal_safe_brt_crashed": 0,
+    "nominal_crashed_brt_safe": 4
+  },
+  "paired_exact_test": {
+    "test": "exact_mcnemar_binomial",
+    "p_value": 0.125
+  },
+  "controller_config": {
+    "traffic_vehicles": 3,
+    "simulation_frequency": 15,
+    "policy_frequency": 5,
+    "safety_value_threshold": 50.0,
+    "nominal_policy": "/home/jack/jack/StanfordRoundabout/roundabout_dqn_gnn/model",
+    "brt_checkpoint": "/home/jack/jack/StanfordRoundabout/vf_30k_epoch.ckpt"
+  }
+}

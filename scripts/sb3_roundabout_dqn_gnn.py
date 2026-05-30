@@ -1,3 +1,6 @@
+import sys
+from pathlib import Path
+
 import gymnasium as gym
 import torch as th
 from gymnasium.wrappers import RecordVideo
@@ -6,12 +9,16 @@ from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 from torch import nn
 
 import highway_env  # noqa: F401
-import src
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
+import src  # noqa: E402  # registers VariableRoundabout-v0
 
 TRAIN = False
 
 MAX_VEHICLES = 12
-MODEL_DIR = "roundabout_dqn_gnn"
+MODEL_DIR = REPO_ROOT / "roundabout_dqn_gnn"
 VIDEO_TRAFFIC_VEHICLES_COUNT = 3
 
 ROUNDABOUT_CONFIG = {
@@ -177,6 +184,7 @@ if __name__ == "__main__":
     video_config = {
         **ROUNDABOUT_CONFIG,
         "traffic_vehicles_count": VIDEO_TRAFFIC_VEHICLES_COUNT,
+        "offscreen_rendering": True,
     }
     video_env = gym.make(
         "VariableRoundabout-v0", render_mode="rgb_array", config=video_config
