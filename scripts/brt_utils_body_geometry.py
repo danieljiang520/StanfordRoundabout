@@ -412,7 +412,7 @@ from libraries.DeepReach_MPC.dynamics.dynamics import TwoCar8D  # noqa: E402
 from libraries.DeepReach_MPC.utils import modules  # noqa: E402
 
 
-CKPT_PATH = REPO_ROOT / "vf_30k_epoch.ckpt"
+CKPT_PATH = REPO_ROOT / "vf_150k.ckpt"
 MODEL_PATH = REPO_ROOT / "roundabout_dqn_gnn" / "model"
 VIDEOS_DIR = REPO_ROOT / "roundabout_dqn_gnn" / "videos"
 

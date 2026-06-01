@@ -20,7 +20,8 @@ SCRIPTS_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPTS_DIR))
 sys.path.insert(0, str(SCRIPTS_DIR.parent))
 
-import brt_utils as bu  # noqa: E402
+# import brt_utils as bu  # noqa: E402 circular model
+import brt_utils_body_geometry as bu
 import src  # registers VariableRoundabout-v0  # noqa: E402
 
 
@@ -32,7 +33,7 @@ POLICY_FREQUENCY = 15
 
 # Switch before entering the zero sublevel set to account for discrete control
 # timing and provide time for the simple stop override to take effect.
-SAFETY_VALUE_THRESHOLD = 50.0
+SAFETY_VALUE_THRESHOLD = 0#50.0
 
 
 def evaluate_brt_frame(

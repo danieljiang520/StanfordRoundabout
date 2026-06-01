@@ -24,15 +24,16 @@ SCRIPTS_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPTS_DIR))
 sys.path.insert(0, str(SCRIPTS_DIR.parent))
 
-import brt_utils as bu  # noqa: E402
+# import brt_utils as bu  # noqa: E402
+import brt_utils_body_geometry as bu
 import src  # registers VariableRoundabout-v0  # noqa: E402
 
 
 MIN_TRAFFIC_VEHICLES = 1
-MAX_TRAFFIC_VEHICLES = 11
+MAX_TRAFFIC_VEHICLES = 7
 SIMULATION_FREQUENCY = 15
-POLICY_FREQUENCY = 15
-SAFETY_VALUE_THRESHOLD = 50.0
+POLICY_FREQUENCY = 5
+SAFETY_VALUE_THRESHOLD = 0
 DEFAULT_NUM_ROLLOUTS = 500
 
 OUTPUT_ROOT = bu.REPO_ROOT / "roundabout_dqn_gnn" / "safety_eval"
