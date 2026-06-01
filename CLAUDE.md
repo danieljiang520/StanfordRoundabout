@@ -55,7 +55,9 @@ Entry points for training, evaluating, and visualizing policies.
 
 - `scripts/visualize_brt_rollout_multicar.py`. Multi-vehicle (`TRAFFIC_VEHICLES = 3`) variant. Each frame, evaluates V once per other vehicle at the ego's actual state, picks the most-dangerous vehicle (the one with the lowest V), plots only that vehicle's BRT slice, and draws a blue dot for every traffic vehicle. Only saves the side-by-side video.
 
-- `scripts/visualize_brt_safety_rollouts_multicar.py`. Records paired nominal and BRT-safety-controlled videos for fixed seeds. The safety controller monitors the most-dangerous vehicle's V at every policy step and overrides the DQN action with a hard stop when `V_ego < SAFETY_VALUE_THRESHOLD` (default 50.0). Saves `nominal_rollout_seed_NN.mp4` and `safety_rollout_and_brt_seed_NN.mp4` files.
+- `scripts/visualize_brt_safety_rollouts_multicar.py`. Records paired nominal and BRT-safety-controlled videos for fixed seeds. The safety controller monitors the most-dangerous vehicle's V at every policy step and overrides the DQN action with a hard stop when `V_ego < SAFETY_VALUE_THRESHOLD`. Saves `nominal_rollout_seed_NN.mp4` and `safety_rollout_and_brt_seed_NN.mp4` files.
+
+- `scripts/visualize_brt_four_action_safety_rollouts_multicar.py`. Four-action safety-controller visualization. Keeps the nominal DQN-GNN policy, but when the BRT filter intervenes it chooses among `FORWARD`, `STOP`, `LEFT`, and `RIGHT` by one-step BRT value prediction on deep-copied envs. `FORWARD` maps to highway-env `FASTER`; `LEFT`/`RIGHT` map to lane-change meta-actions; `STOP` preserves the hard stop override (`speed = 0`, `target_speed = 0`, then `IDLE`). Supports `--filter least-restrictive` (`V < 0` intervention) and `--filter smooth --gamma <value>` (finite-difference `Vdot + gamma V >= 0` smooth blending). Saves `four_action_least_restrictive_seed_NN.mp4` or `four_action_smooth_gamma_G_seed_NN.mp4`.
 
 - `scripts/evaluate_brt_safety_rate.py`. Non-rendered paired evaluation: runs many seeds with and without the BRT safety wrapper, sweeps over `traffic_vehicles_count`, and writes per-rollout CSVs and a summary JSON to `roundabout_dqn_gnn/safety_eval/<timestamp>_traffic_NN/`.
 
@@ -105,7 +107,7 @@ Outputs of the GNN policy.
 
 - `roundabout_dqn_gnn/model.zip`. Trained stable-baselines3 DQN-GNN policy.
 - `roundabout_dqn_gnn/DQN_1/`, `DQN_2/`. TensorBoard logs.
-- `roundabout_dqn_gnn/videos/`. MP4s produced by the visualization scripts: `brt_overlay.mp4`, `rollout.mp4`, `rollout_and_brt.mp4` (single-other-car); `rollout_and_brt_multicar.mp4` (multi-car); `nominal_rollout_seed_NN.mp4`, `safety_rollout_and_brt_seed_NN.mp4` (safety controller).
+- `roundabout_dqn_gnn/videos/`. MP4s produced by the visualization scripts: `brt_overlay.mp4`, `rollout.mp4`, `rollout_and_brt.mp4` (single-other-car); `rollout_and_brt_multicar.mp4` (multi-car); `nominal_rollout_seed_NN.mp4`, `safety_rollout_and_brt_seed_NN.mp4` (stop safety controller); `four_action_least_restrictive_seed_NN.mp4`, `four_action_smooth_gamma_G_seed_NN.mp4` (four-action filters).
 - `roundabout_dqn_gnn/safety_eval/`. CSV and JSON outputs from `evaluate_brt_safety_rate.py`. Each subdirectory is one run, named by timestamp (and optionally `_traffic_NN` when sweeping over `traffic_vehicles_count`).
 
 ## notebook/
@@ -141,6 +143,15 @@ python scripts/visualize_brt_safety_rollouts_multicar.py
 
 Produces paired nominal and safety MP4s for each seed.
 
+### Generate the four-action BRT safety controller demo
+
+```bash
+python scripts/visualize_brt_four_action_safety_rollouts_multicar.py --filter least-restrictive
+python scripts/visualize_brt_four_action_safety_rollouts_multicar.py --filter smooth --gamma 5
+```
+
+Produces paired nominal and four-action safety MP4s for each seed. Use `--num-seeds 1` for a quick smoke run.
+
 ### Evaluate the safety controller across many seeds
 
 ```bash
@@ -170,4 +181,5 @@ Set `TRAIN = True` in `scripts/sb3_roundabout_dqn_gnn.py`, then run it.
 - highway-env's y-axis points down (screen convention). The BRT plots invert the y-axis in `bu.decorate_brt_axes` so the orientation matches the rollout render.
 - The simple `V < 0` trigger is too late under discrete control; the current scripts use a positive margin (`SAFETY_VALUE_THRESHOLD = 50.0`).
 - `policy_frequency` must be raised above the highway-env default (1 Hz) for the safety controller to react in time. Current scripts use 15 Hz.
+- In the four-action safety script, smooth blending is implemented in discrete time as `(V_next - V_current) / dt + gamma * V_current >= 0`, because the deployed controller selects highway-env meta-actions instead of direct continuous controls.
 - The `dynamics.py` file currently contains two `TwoCar8D` classes (original and body-geometry). Be careful which one Python imports if you touch the file.
