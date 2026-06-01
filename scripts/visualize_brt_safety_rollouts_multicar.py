@@ -25,11 +25,11 @@ import brt_utils_body_geometry as bu
 import src  # registers VariableRoundabout-v0  # noqa: E402
 
 
-TRAFFIC_VEHICLES = 7
+TRAFFIC_VEHICLES = 3
 ROLLOUT_SEEDS = range(10)
 # Monitor BRT more often than highway-env's default once-per-second policy rate.
 SIMULATION_FREQUENCY = 15
-POLICY_FREQUENCY = 15
+POLICY_FREQUENCY = 5
 
 # Switch before entering the zero sublevel set to account for discrete control
 # timing and provide time for the simple stop override to take effect.
