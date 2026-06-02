@@ -33,12 +33,16 @@ import brt_utils_body_geometry as bu
 import src  # registers VariableRoundabout-v0  # noqa: E402
 
 
-TRAFFIC_VEHICLES = 7
+TRAFFIC_VEHICLES = 1
 ROLLOUT_SEEDS = range(10)
 # Monitor BRT more often than highway-env's default once-per-second policy rate.
 SIMULATION_FREQUENCY = 15
 POLICY_FREQUENCY = 5
-SMOOTH_GAMMA_DEFAULT = 5.0
+DEFAULT_FILTER = "least-restrictive"
+SMOOTH_GAMMA_DEFAULT = 1.0
+SAFETY_VALUE_THRESHOLD = 10
+DEFAULT_NUM_SEEDS = len(ROLLOUT_SEEDS)
+DEFAULT_START_SEED = 0
 
 FILTER_LEAST_RESTRICTIVE = "least-restrictive"
 FILTER_SMOOTH = "smooth"
@@ -79,8 +83,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--filter",
         choices=[FILTER_LEAST_RESTRICTIVE, FILTER_SMOOTH],
-        default=FILTER_LEAST_RESTRICTIVE,
-        help=f"Safety filter to use. Default: {FILTER_LEAST_RESTRICTIVE}.",
+        default=DEFAULT_FILTER,
+        help=f"Safety filter to use. Default: {DEFAULT_FILTER}.",
     )
     parser.add_argument(
         "--gamma",
@@ -89,16 +93,25 @@ def parse_args() -> argparse.Namespace:
         help=f"Smooth blending gamma. Used only by --filter smooth. Default: {SMOOTH_GAMMA_DEFAULT}.",
     )
     parser.add_argument(
+        "--value-threshold",
+        type=float,
+        default=SAFETY_VALUE_THRESHOLD,
+        help=(
+            "Least-restrictive filter intervention threshold. "
+            f"Default: {SAFETY_VALUE_THRESHOLD:g}."
+        ),
+    )
+    parser.add_argument(
         "--num-seeds",
         type=int,
-        default=len(ROLLOUT_SEEDS),
-        help=f"Number of fixed seeds to run from seed 0. Default: {len(ROLLOUT_SEEDS)}.",
+        default=DEFAULT_NUM_SEEDS,
+        help=f"Number of fixed seeds to run from seed 0. Default: {DEFAULT_NUM_SEEDS}.",
     )
     parser.add_argument(
         "--start-seed",
         type=int,
-        default=0,
-        help="First rollout seed. Default: 0.",
+        default=DEFAULT_START_SEED,
+        help=f"First rollout seed. Default: {DEFAULT_START_SEED}.",
     )
     return parser.parse_args()
 
@@ -307,6 +320,7 @@ def choose_least_restrictive_action(
     env,
     nominal_action: int,
     current_value: float,
+    value_threshold: float,
     dynamics,
     vf_model,
     saved_controller_state: tuple[float, int] | None,
@@ -329,7 +343,7 @@ def choose_least_restrictive_action(
     )
     candidate_results = with_smooth_constraints(candidate_results, current_value, 0.0)
 
-    if current_value >= 0.0:
+    if current_value >= value_threshold:
         return ControllerDecision(
             action=nominal_action,
             mode="DQN",
@@ -428,6 +442,7 @@ def choose_controller_action(
     current_value: float,
     filter_name: str,
     gamma: float,
+    value_threshold: float,
     dynamics,
     vf_model,
     saved_controller_state: tuple[float, int] | None,
@@ -440,6 +455,7 @@ def choose_controller_action(
             env,
             nominal_action,
             current_value,
+            value_threshold,
             dynamics,
             vf_model,
             saved_controller_state,
@@ -475,6 +491,7 @@ def rollout_with_safety_controller(
     seed: int,
     filter_name: str,
     gamma: float,
+    value_threshold: float,
 ) -> dict:
     """Run one rollout with the selected BRT safety filter."""
     obs, _info = env.reset(seed=seed)
@@ -504,6 +521,7 @@ def rollout_with_safety_controller(
             ego_value,
             filter_name,
             gamma,
+            value_threshold,
             dynamics,
             vf_model,
             saved_controller_state,
@@ -534,7 +552,8 @@ def rollout_with_safety_controller(
         if decision.mode != "DQN":
             print(
                 f"  seed={seed:02d} step={step_count:02d}: "
-                f"filter={filter_name} V={ego_value:.3f} -> {decision.mode}; "
+                f"filter={filter_name} V={ego_value:.3f} "
+                f"threshold={value_threshold:g} -> {decision.mode}; "
                 f"nominal_sdot={decision.nominal_smooth_constraint:.3f}; "
                 f"{format_candidate_summary(decision.candidate_results)}"
             )
@@ -624,7 +643,8 @@ def main() -> None:
     print(
         f"Monitoring safety at {POLICY_FREQUENCY} Hz "
         f"with dynamics integrated at {SIMULATION_FREQUENCY} Hz; "
-        f"filter={args.filter}; gamma={args.gamma:g}."
+        f"filter={args.filter}; gamma={args.gamma:g}; "
+        f"value_threshold={args.value_threshold:g}."
     )
 
     try:
@@ -655,6 +675,7 @@ def main() -> None:
                 seed,
                 args.filter,
                 args.gamma,
+                args.value_threshold,
             )
             modes = rollout["controller_modes"]
             dqn_steps = modes.count("DQN")
